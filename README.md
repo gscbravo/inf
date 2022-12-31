@@ -2,9 +2,9 @@
 
 ## About
 
-An infinitely large textboard model showcasing a concept for an
-Internet forum that has the possibility of an infinite amount of topics
-at the discretion of visitors. Boards are created upon their URL being
+An infinitely large [textboard](https://en.wikipedia.org/wiki/Textboard) model
+showcasing a concept for an Internet forum that has the possibility of an infinite
+amount of topics at the discretion of visitors. Boards are created upon their URL being
 visited, with boards being listed upon a comment being posted on the board.
 To conserve storage space, there is a limit on the number of comments a board
 can have, with old comments being removed to make room for new comments.
@@ -32,9 +32,13 @@ pip3 install -r requirements.txt
 flask run
 ```
 
+When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/) with
+[Nginx](https://nginx.org/).
+
 ## TODO
 
 - [ ] Permanent storage, potentially JSON for the purpose of this model
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
+- [ ] Reply to multiple posts
