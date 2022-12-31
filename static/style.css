@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    background-color: #0a0011;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 1.1em;
+}
+.wrapper {
+    margin: 0 auto;
+    width: 90%;
+}
+input[type=submit] {
+    font-size: 1em;
+}
+#form-req {
+    font-size: 1.7em;
+    color: #ff0000;
+}
+#form-text {
+    width: 100%;
+}
+input[type=text] {
+    font-size: 1.1em;
+}
+textarea {
+    font-size: 1.1em;
+}
+.comment {
+    background-color: #200136;
+    border-radius: 10px;
+    margin: .5em 0;
+    padding: .5em;
+}
+.comment-name {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #00ff00;
+}
+.comment-id {
+    text-decoration: underline;
+}
+.comment-subject {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #ff0000;
+}
+a {
+    color: #fff;
+}
+a:hover {
+    color: #ff0000;
+}
+.comment-replyto {
+    font-weight: bold;
+    color: #1da1f2;
+}
+.comment-replies {
+    font-weight: bold;
+    color: #1da1f2;
+}
+.comment-text {
+    overflow-wrap: break-word;
+}
