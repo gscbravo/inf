@@ -29,6 +29,7 @@ The defaults for the forum are found in variables at the top of
 
 ```
 pip3 install -r requirements.txt
+cd src
 flask run
 ```
 
