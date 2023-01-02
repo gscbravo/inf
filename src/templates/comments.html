@@ -31,7 +31,7 @@
             <input type="submit" id="form-submit" value="Submit">
         </form>
         <!-- comment section -->
-        <h2>Comments Section</h2>
+        <h2>Comments Section (Total: {{ comments|length }})</h2>
         {% for comment in comments %}
         <div class="comment" id="p{{ comment['id'] }}">
             <span class="comment-info">
