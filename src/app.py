@@ -26,7 +26,7 @@ DEFAULT_NAME = "Guest"
 # site name
 SITE_NAME = "Infinity Forums"
 # default board name
-DEFAULT_BOARD = "index"
+DEFAULT_BOARD = "general"
 
 app = Flask(__name__)
 
@@ -44,16 +44,17 @@ def list_boards():
 
 @app.route("/b/<board>/")
 def load_board(board):
+    req_board = board.lower().strip()
     # save space by just using empty array if no comments
-    board_comments = comments[board] if board in comments else []
+    board_comments = comments[req_board] if req_board in comments else []
     tag = request.args.get("tag", "")
-    return render_template("comments.html", comments=board_comments, tag=tag, default_name=DEFAULT_NAME, board=board, site_name=SITE_NAME)
+    return render_template("comments.html", comments=board_comments, tag=tag, default_name=DEFAULT_NAME, board=req_board, site_name=SITE_NAME)
 
 @app.route("/go", methods=["GET", "POST"])
 def go_to_board():
     if request.method == "GET":
         return render_template("error.html", error="Method not allowed")
-    redirect_board = request.form.get("board", "").strip()
+    redirect_board = request.form.get("board", "").lower().strip()
     if not redirect_board:
         return render_template("error.html", error="Board name must not be empty")
     return redirect(f"/b/{redirect_board}/") if redirect_board else redirect("/")
@@ -68,6 +69,8 @@ def submit(board):
     subject = request.form.get("subject", "").strip()
     text = request.form.get("text", "").strip()
     replyto = request.form.get("replyto", "").strip()
+
+    req_board = board.lower().strip()
 
     # if replyto is set and not a number, error
     if replyto and not replyto.isdigit():
@@ -85,9 +88,9 @@ def submit(board):
         name = DEFAULT_NAME
 
     # comment has been error checked, create board if not found
-    if board not in comments:
-        comments[board] = []
-    current_board = comments[board]
+    if req_board not in comments:
+        comments[req_board] = []
+    current_board = comments[req_board]
 
     # remove oldest post if at maximum comment capacity
     if len(current_board) >= MAX_COMMENTS:
@@ -114,7 +117,7 @@ def submit(board):
         "replies": []
     }
     current_board.insert(0, comment_data)
-    return redirect(f"/b/{board}/")
+    return redirect(f"/b/{req_board}/")
 
 if __name__ == "__main__":
     app.run()
