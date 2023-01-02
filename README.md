@@ -23,7 +23,7 @@ The defaults for the forum are found in variables at the top of
 - Maximum comment length: `2000`
 - Default comment name: `Guest`
 - Default site name: `Infinity Forums`
-- Default board: `index`
+- Default board: `general`
 
 ## Usage
 
