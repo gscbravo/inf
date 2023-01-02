@@ -100,8 +100,8 @@ def submit(board):
     # if comment is a replyto, add reply to comment it replies to
     if replyto:
         for comment in current_board:
-            if comment["id"] == int(replyto):
-                comment["replies"].append(posts)
+            if comment['id'] == int(replyto):
+                comment['replies'].append(posts)
 
     # insert comment and return to post sent
     comment_data = {
