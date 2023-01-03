@@ -30,7 +30,7 @@ DEFAULT_BOARD = "general"
 
 app = Flask(__name__)
 
-# comment list and number of total posts submitted
+# comment list and number of total comments submitted
 comments = {}
 posts = 0
 
@@ -99,12 +99,13 @@ def submit(board):
     # increase post id
     global posts
     posts += 1
+    post_id = posts
 
     # if comment is a replyto, add reply to comment it replies to
     if replyto:
         for comment in current_board:
             if comment['id'] == int(replyto):
-                comment['replies'].append(posts)
+                comment['replies'].append(post_id)
 
     # insert comment and return to post sent
     comment_data = {
@@ -112,7 +113,7 @@ def submit(board):
         "subject": subject,
         "text": text.split("\n"),
         "date": datetime.utcnow().isoformat(" ", "seconds"),
-        "id": posts,
+        "id": post_id,
         "replyto": replyto,
         "replies": []
     }
