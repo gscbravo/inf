@@ -16,8 +16,7 @@ main page, or by typing a URL in the form of `/b/<board>`. Each comment
 is assigned a comment number to uniquely identify it. Board names are case
 insensitive.
 
-The defaults for the forum are found in variables at the top of
-`app.py` and can be changed from there.
+The defaults for the forum are found in variables at the top of `app.py`.
 
 ### Defaults
 - Maximum number of comments per board: `1000`
