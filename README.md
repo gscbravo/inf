@@ -3,11 +3,12 @@
 ## About
 
 An infinitely large [textboard](https://en.wikipedia.org/wiki/Textboard) model
-showcasing a concept for an Internet forum that has the possibility of an infinite
-amount of topics at the discretion of visitors. Boards are created upon their URL being
-visited, with boards being listed upon a comment being posted on the board.
-To conserve storage space, there is a limit on the number of comments a board
-can have, with old comments being removed to make room for new comments.
+showcasing a concept for an Internet forum that has the possibility of an
+infinite amount of topics at the discretion of visitors. Boards are created
+upon their URL being visited, with boards being listed upon a comment being
+posted on the board. To conserve storage space, there is a limit on the number
+of comments a board can have, with old comments being removed to make room for
+new comments.
 
 Currently, no registration is required to comment on the forum or create
 a board. There is no permanent storage currently, boards and comments are
@@ -33,8 +34,8 @@ cd src
 flask run
 ```
 
-When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/) with
-[Nginx](https://nginx.org/).
+When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/)
+with [Nginx](https://nginx.org/).
 
 ## TODO
 
