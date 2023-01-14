@@ -35,22 +35,22 @@
         {% for comment in comments %}
         <div class="comment" id="p{{ comment['id'] }}">
             <span class="comment-info">
-                <span class="comment-subject">{{ comment["subject"] }}</span>
-                <span class="comment-name">{{ comment["name"] }}</span>
-                <span class="comment-date">({{ comment["date"] }})</span>
-                <a href="#p{{ comment['id'] }}" class="comment-id">No. {{ comment["id"] }}</a>
+                <span class="comment-subject">{{ comment['subject'] }}</span>
+                <span class="comment-name">{{ comment['name'] }}</span>
+                <span class="comment-date">({{ comment['date'] }})</span>
+                <a href="#p{{ comment['id'] }}" class="comment-id">No. {{ comment['id'] }}</a>
                 <a href="?tag={{ comment['id'] }}" class="comment-reply">Reply</a>
                 <span>
-                    {% for id in comment["replies"] %}
+                    {% for id in comment['replies'] %}
                     <a href="#p{{ id }}" class="comment-replies">#{{ id }}</a>{{ ", " if not loop.last else "" }}
                     {% endfor %}
                 </span>
             </span><br>
-            {% if comment["replyto"]|length %}
-            <p><a href="#p{{ comment['replyto'] }}" class="comment-replyto">@{{ comment["replyto"] }}</a></p>
+            {% if comment['replyto']|length %}
+            <p><a href="#p{{ comment['replyto'] }}" class="comment-replyto">@{{ comment['replyto'] }}</a></p>
             {% endif %}
             <span class="comment-text">
-                {% for line in comment["text"] %}
+                {% for line in comment['text'] %}
                 {{ line }}
                 {% if not loop.last %}
                 <br>
