@@ -11,11 +11,10 @@ of comments a board can have, with old comments being removed to make room for
 new comments.
 
 Currently, no registration is required to comment on the forum or create
-a board. There is no permanent storage currently, boards and comments are
-stored in memory. A board can be created using the search at the top of the
-main page, or by typing a URL in the form of `/b/<board>`. Each comment
-is assigned a comment number to uniquely identify it. Board names are case
-insensitive.
+a board. Posts are stored in JSON. A board can be created using the search
+at the top of the main page, or by typing a URL in the form of `/b/<board>`.
+Each comment is assigned a comment number to uniquely identify it. Board names
+are case insensitive.
 
 The defaults for the forum are found in variables at the top of `app.py`.
 
@@ -39,7 +38,6 @@ with [Nginx](https://nginx.org/).
 
 ## TODO
 
-- [ ] Permanent storage, potentially JSON for the purpose of this model
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments

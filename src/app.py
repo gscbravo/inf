@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from flask import Flask, render_template, redirect, request
+from tinydb import TinyDB, Query
 from datetime import datetime
 
 # max number of comments to store
@@ -31,8 +32,11 @@ DEFAULT_BOARD = 'general'
 app = Flask(__name__)
 
 # comment list and number of total comments submitted
-comments = {}
-posts = 0
+db = TinyDB('db.json')
+q = Query()
+
+if not db.search(q.total.exists()):
+    db.insert({'total': 0})
 
 @app.route('/')
 def index():
@@ -41,8 +45,8 @@ def index():
 @app.route('/boards')
 def list_boards():
     results = {}
-    for board in comments:
-        results[board] = len(comments[board])
+    for line in db.search(q.board.exists()):
+        results[line['board']] = len(line['posts'])
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     return render_template('boards.html', results=results, site_name=SITE_NAME)
 
@@ -50,7 +54,8 @@ def list_boards():
 def load_board(board):
     req_board = board.lower().strip()
     # save space by just using empty array if no comments
-    board_comments = comments[req_board] if req_board in comments else []
+    res = db.search(q.board == board)
+    board_comments = res[0]['posts'] if len(res) else []
     tag = request.args.get('tag', '')
     return render_template('comments.html', comments=board_comments, tag=tag, default_name=DEFAULT_NAME, board=req_board, site_name=SITE_NAME)
 
@@ -66,7 +71,7 @@ def go_to_board():
 @app.route('/b/<board>/submit', methods=['GET', 'POST'])
 def submit(board):
     if request.method == 'GET':
-        return render_template('error.html', error='Method not allowed')
+        return redirect(f'/b/{board}/')
     # get form args name, subject, text, replyto; set to empty string if not represent
     # only text is going to be actually required to post
     name = request.form.get('name', '').strip()
@@ -92,22 +97,23 @@ def submit(board):
         name = DEFAULT_NAME
 
     # comment has been error checked, create board if not found
-    if req_board not in comments:
-        comments[req_board] = []
-    current_board = comments[req_board]
+    res = db.search(q.board == board)
+    if len(res) == 0:
+        db.insert({'board': req_board, 'posts': []})
+    data = db.search(q.board == board)[0]['posts']
 
     # remove oldest post if at maximum comment capacity
-    if len(current_board) >= MAX_COMMENTS:
-        current_board.pop()
+    if len(data) >= MAX_COMMENTS:
+        data.pop()
 
     # increase post id
-    global posts
-    posts += 1
-    post_id = posts
+    old_total = db.search(q.total.exists())[0]['total']
+    db.update({'total': old_total + 1}, q.total.exists())
+    post_id = db.search(q.total.exists())[0]['total']
 
     # if comment is a replyto, add reply to comment it replies to
     if replyto:
-        for comment in current_board:
+        for comment in data:
             if comment['id'] == int(replyto):
                 comment['replies'].append(post_id)
 
@@ -121,7 +127,8 @@ def submit(board):
         'replyto': replyto,
         'replies': []
     }
-    current_board.insert(0, comment_data)
+    data.insert(0, comment_data)
+    db.update({'posts': data}, q.board == req_board)
     return redirect(f'/b/{req_board}/')
 
 if __name__ == '__main__':
