@@ -1,1 +1,2 @@
-Flask==2.2.2
+Flask==2.2.3
+tinydb==4.7.1
