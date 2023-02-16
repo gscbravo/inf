@@ -12,8 +12,8 @@
     <div class="wrapper">
         <h1><a href="/">{{ site_name }}</a></h1>
         <h2>Created Boards</h2>
-        {% for board in all_boards %}
-        <h3><a href="/b/{{ board }}/">{{ board }}</a></h3>
+        {% for board in results %}
+        <h3><a href="/b/{{ board }}/">{{ board }} (Total: {{ results[board] }})</a></h3>
         {% endfor %}
     </div>
 </body>

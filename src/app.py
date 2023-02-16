@@ -40,7 +40,11 @@ def index():
 
 @app.route('/boards')
 def list_boards():
-    return render_template('boards.html', all_boards=list(comments.keys()), site_name=SITE_NAME)
+    results = {}
+    for board in comments:
+        results[board] = len(comments[board])
+    results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
+    return render_template('boards.html', results=results, site_name=SITE_NAME)
 
 @app.route('/b/<board>/')
 def load_board(board):
