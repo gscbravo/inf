@@ -100,11 +100,12 @@ def submit(board):
     res = db.search(q.board == board)
     if len(res) == 0:
         db.insert({'board': req_board, 'posts': []})
-    data = db.search(q.board == board)[0]['posts']
 
     # remove oldest post if at maximum comment capacity
-    if len(data) >= MAX_COMMENTS:
+    if len(db.search(q.board == board)[0]['posts']) >= MAX_COMMENTS:
+        data = db.search(q.board == board)[0]['posts']
         data.pop()
+        db.update({'posts': data}, q.board == board)
 
     # increase post id
     old_total = db.search(q.total.exists())[0]['total']
@@ -113,9 +114,11 @@ def submit(board):
 
     # if comment is a replyto, add reply to comment it replies to
     if replyto:
+        data = db.search(q.board == board)[0]['posts']
         for comment in data:
             if comment['id'] == int(replyto):
                 comment['replies'].append(post_id)
+        db.update({'posts': data}, q.board == req_board)
 
     # insert comment and return to post sent
     comment_data = {
@@ -127,6 +130,7 @@ def submit(board):
         'replyto': replyto,
         'replies': []
     }
+    data = db.search(q.board == board)[0]['posts']
     data.insert(0, comment_data)
     db.update({'posts': data}, q.board == req_board)
     return redirect(f'/b/{req_board}/')
