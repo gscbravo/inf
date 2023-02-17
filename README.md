@@ -40,7 +40,7 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Replace JSON with SQLite for better locking, can't be bother to right now
 	- [ ] Or lazily use a bunch of locks everywhere and keep TinyDB
-		- find a lock that works across multiple processes, not threading.Lock
+		- Find a lock that works across multiple processes, not threading.Lock()
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
