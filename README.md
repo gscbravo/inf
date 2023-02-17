@@ -38,6 +38,7 @@ with [Nginx](https://nginx.org/).
 
 ## TODO
 
+- [ ] Replace JSON with SQLite for better locking, can't be bother to right now
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
