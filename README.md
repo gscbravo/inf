@@ -39,8 +39,11 @@ with [Nginx](https://nginx.org/).
 ## TODO
 
 - [ ] Replace JSON with SQLite for better locking, can't be bother to right now
-	- [ ] Or lazily use a bunch of locks everywhere and keep TinyDB
+	- Or lazily use a bunch of locks everywhere and keep TinyDB
 		- Find a lock that works across multiple processes, not threading.Lock()
+		- Tempted to use a file as a lock
+- [ ] Config file to configure settings
+- [ ] Website admin area to configure settings
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
