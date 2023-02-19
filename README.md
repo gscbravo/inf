@@ -1,5 +1,10 @@
 # inf
 
+## Note
+
+Probably going to be working mostly on [lim](https://github.com/gscbravo/lim)
+for now.
+
 ## About
 
 An infinitely large [textboard](https://en.wikipedia.org/wiki/Textboard) model
