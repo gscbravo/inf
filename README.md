@@ -3,7 +3,7 @@
 ## Note
 
 Probably going to be working mostly on [lim](https://github.com/gscbravo/lim)
-for now.
+for now. Currently, inf is on a hiatus until I get that into a good shape.
 
 ## About
 
