@@ -2,12 +2,6 @@
 
 ## About
 
-An simple [textboard](https://en.wikipedia.org/wiki/Textboard) made as a
-simple version of my currently definitely not abandoned infinitely large
-textboard [inf](https://github.com/gscbravo/inf). Currently, I'm going to
-be working on this for right now as to work on porting it to
-[SQLite](https://en.wikipedia.org/wiki/SQLite) for better data management.
-
 An infinitely large [textboard](https://en.wikipedia.org/wiki/Textboard) model
 showcasing a concept for an Internet forum that has the possibility of an
 infinite amount of topics at the discretion of visitors. Boards are created
