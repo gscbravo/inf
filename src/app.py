@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from datetime import datetime, timezone
 from flask import Flask, render_template, redirect, request
-from tinydb import TinyDB, Query
-from datetime import datetime
+import sqlite3
 
 # max number of comments to store
 MAX_COMMENTS = 1000
@@ -25,18 +25,25 @@ MAX_COMMENT_LENGTH = 2000
 # default name
 DEFAULT_NAME = 'Guest'
 # site name
-SITE_NAME = 'Infinity Forums'
+SITE_NAME = 'Limited Forums'
+# site description
+SITE_DESCRIPTION = 'Limited Forums open comments section'
 # default board name
 DEFAULT_BOARD = 'general'
 
 app = Flask(__name__)
 
-# comment list and number of total comments submitted
-db = TinyDB('db.json')
-q = Query()
-
-if not db.search(q.total.exists()):
-    db.insert({'total': 0})
+# initialize database if doesn't exist
+def db_init(board_name):
+    conn = sqlite3.connect('board.db')
+    cur = conn.cursor()
+    cur.execute(f'''create table if not exists {board_name} (
+            name text,
+            subject text,
+            text text,
+            date text
+            )''')
+    conn.commit()
 
 @app.route('/')
 def index():
@@ -44,20 +51,27 @@ def index():
 
 @app.route('/boards')
 def list_boards():
+    conn = sqlite3.connect('board.db')
+    cur = conn.cursor()
+    res = cur.execute('select name from sqlite_master where type="table"').fetchall()
     results = {}
-    for line in db.search(q.board.exists()):
-        results[line['board']] = len(line['posts'])
+    for item in res:
+        item_size = cur.execute(f'select rowid from {item[0]} order by rowid desc limit 1').fetchone()
+        results[item[0]] = item_size[0] if item_size else 0
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     return render_template('boards.html', results=results, site_name=SITE_NAME)
 
 @app.route('/b/<board>/')
 def load_board(board):
     req_board = board.lower().strip()
-    # save space by just using empty array if no comments
-    res = db.search(q.board == board)
-    board_comments = res[0]['posts'] if len(res) else []
-    tag = request.args.get('tag', '')
-    return render_template('comments.html', comments=board_comments, tag=tag, default_name=DEFAULT_NAME, board=req_board, site_name=SITE_NAME)
+    db_init(req_board)
+    conn = sqlite3.connect('board.db')
+    cur = conn.cursor()
+    res = cur.execute(f'select rowid, * from {req_board}').fetchall()
+    board_comments = []
+    for comment in res:
+        board_comments.insert(0, [comment[0], comment[1], comment[2], comment[3].split('\n'), comment[4]])
+    return render_template('comments.html', board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
 @app.route('/go', methods=['GET', 'POST'])
 def go_to_board():
@@ -66,29 +80,25 @@ def go_to_board():
     redirect_board = request.form.get('board', '').lower().strip()
     if not redirect_board:
         return render_template('error.html', error='Board name must not be empty')
-    return redirect(f'/b/{redirect_board}/') if redirect_board else redirect('/')
+    return redirect(f'/b/{redirect_board}/')
 
 @app.route('/b/<board>/submit', methods=['GET', 'POST'])
 def submit(board):
     if request.method == 'GET':
-        return redirect(f'/b/{board}/')
-    # get form args name, subject, text, replyto; set to empty string if not represent
+        return redirect('/')
+    # get form args name, subject, text
     # only text is going to be actually required to post
     name = request.form.get('name', '').strip()
     subject = request.form.get('subject', '').strip()
     text = request.form.get('text', '').strip()
-    replyto = request.form.get('replyto', '').strip()
 
     req_board = board.lower().strip()
-
-    # if replyto is set and not a number, error
-    if replyto and not replyto.isdigit():
-        return render_template('error.html', error='Comment ID is invalid')
 
     # if text is empty, error
     if not text:
         return render_template('error.html', error='Text box must not be empty')
 
+    # limit comment length
     if len(text) > MAX_COMMENT_LENGTH:
         return render_template('error.html', error=f'Text must be no more than {MAX_COMMENT_LENGTH} characters')
 
@@ -96,43 +106,25 @@ def submit(board):
     if not name:
         name = DEFAULT_NAME
 
-    # comment has been error checked, create board if not found
-    res = db.search(q.board == board)
-    if len(res) == 0:
-        db.insert({'board': req_board, 'posts': []})
-
-    # remove oldest post if at maximum comment capacity
-    if len(db.search(q.board == board)[0]['posts']) >= MAX_COMMENTS:
-        data = db.search(q.board == board)[0]['posts']
-        data.pop()
-        db.update({'posts': data}, q.board == board)
-
-    # increase post id
-    old_total = db.search(q.total.exists())[0]['total']
-    db.update({'total': old_total + 1}, q.total.exists())
-    post_id = db.search(q.total.exists())[0]['total']
-
-    # if comment is a replyto, add reply to comment it replies to
-    if replyto:
-        data = db.search(q.board == board)[0]['posts']
-        for comment in data:
-            if comment['id'] == int(replyto):
-                comment['replies'].append(post_id)
-        db.update({'posts': data}, q.board == req_board)
-
     # insert comment and return to post sent
-    comment_data = {
-        'name': name,
-        'subject': subject,
-        'text': text.split('\n'),
-        'date': datetime.utcnow().isoformat(' ', 'seconds'),
-        'id': post_id,
-        'replyto': replyto,
-        'replies': []
-    }
-    data = db.search(q.board == board)[0]['posts']
-    data.insert(0, comment_data)
-    db.update({'posts': data}, q.board == req_board)
+    comment_data = (
+        name,
+        subject,
+        text,
+        str(datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
+        )
+
+    db_init(req_board)
+    conn = sqlite3.connect('board.db')
+    cur = conn.cursor()
+
+    # drop oldest post if at limit
+    if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
+        cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
+
+    cur.execute(f'insert into {req_board} values (?, ?, ?, ?)', comment_data)
+    conn.commit()
+
     return redirect(f'/b/{req_board}/')
 
 if __name__ == '__main__':

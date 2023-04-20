@@ -1,11 +1,12 @@
 # inf
 
-## Note
-
-Probably going to be working mostly on [lim](https://github.com/gscbravo/lim)
-for now. Currently, inf is on a hiatus until I get that into a good shape.
-
 ## About
+
+An simple [textboard](https://en.wikipedia.org/wiki/Textboard) made as a
+simple version of my currently definitely not abandoned infinitely large
+textboard [inf](https://github.com/gscbravo/inf). Currently, I'm going to
+be working on this for right now as to work on porting it to
+[SQLite](https://en.wikipedia.org/wiki/SQLite) for better data management.
 
 An infinitely large [textboard](https://en.wikipedia.org/wiki/Textboard) model
 showcasing a concept for an Internet forum that has the possibility of an
@@ -15,10 +16,10 @@ posted on the board. To conserve storage space, there is a limit on the number
 of comments a board can have, with old comments being removed to make room for
 new comments.
 
-Currently, no registration is required to comment on the forum or create
-a board. Posts are stored in JSON. A board can be created using the search
-at the top of the main page, or by typing a URL in the form of `/b/<board>`.
-Each comment is assigned a comment number to uniquely identify it. Board names
+Currently, no registration is required to comment on the forum. Posts are
+stored in SQLite. Each comment is assigned a comment number to uniquely
+identify it. A board can be created using the search at the top of the main
+page, or by typing a URL in the form of `/b/<board>`. Board names
 are case insensitive.
 
 The defaults for the forum are found in variables at the top of `app.py`.
@@ -26,8 +27,9 @@ The defaults for the forum are found in variables at the top of `app.py`.
 ### Defaults
 - Maximum number of comments per board: `1000`
 - Maximum comment length: `2000`
-- Default comment name: `Guest`
-- Default site name: `Infinity Forums`
+- Post name: `Guest`
+- Site name: `Infinity Forums`
+- Site description: `Infinity Forums open comments section`
 - Default board: `general`
 
 ## Usage
@@ -43,13 +45,10 @@ with [Nginx](https://nginx.org/).
 
 ## TODO
 
-- [ ] Replace JSON with SQLite for better locking, can't be bother to right now
-	- Or lazily use a bunch of locks everywhere and keep TinyDB
-		- Find a lock that works across multiple processes, not threading.Lock()
-		- Tempted to use a file as a lock
+- [ ] Make sure this works with multiple processes as workers
+- [ ] Replies
 - [ ] Config file to configure settings
 - [ ] Website admin area to configure settings
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
-- [ ] Reply to multiple posts
