@@ -29,8 +29,7 @@ The defaults for the forum are found in variables at the top of `app.py`.
 ## Usage
 
 ```
-pip3 install -r requirements.txt
-cd src
+pip3 install flask
 flask run
 ```
 
