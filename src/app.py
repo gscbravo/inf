@@ -23,19 +23,19 @@ MAX_COMMENTS = 1000
 # max chars in comment
 MAX_COMMENT_LENGTH = 2000
 # default name
-DEFAULT_NAME = 'Guest'
+DEFAULT_NAME = "Guest"
 # site name
-SITE_NAME = 'Infinity Forums'
+SITE_NAME = "Infinity Forums"
 # site description
-SITE_DESCRIPTION = 'Infinity Forums open comments section'
+SITE_DESCRIPTION = "Infinity Forums open comments section"
 # default board name
-DEFAULT_BOARD = 'general'
+DEFAULT_BOARD = "general"
 
 app = Flask(__name__)
 
 # initialize database if doesn't exist
 def db_init(board_name):
-    conn = sqlite3.connect('board.db')
+    conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     cur.execute(f'''create table if not exists {board_name} (
             name text,
@@ -45,13 +45,13 @@ def db_init(board_name):
             )''')
     conn.commit()
 
-@app.route('/')
+@app.route("/")
 def index():
-    return redirect(f'/b/{DEFAULT_BOARD}/')
+    return redirect(f"/b/{DEFAULT_BOARD}/")
 
-@app.route('/boards')
+@app.route("/boards")
 def list_boards():
-    conn = sqlite3.connect('board.db')
+    conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     res = cur.execute('select name from sqlite_master where type="table"').fetchall()
     results = {}
@@ -59,48 +59,48 @@ def list_boards():
         item_size = cur.execute(f'select rowid from {item[0]} order by rowid desc limit 1').fetchone()
         results[item[0]] = item_size[0] if item_size else 0
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
-    return render_template('boards.html', results=results, site_name=SITE_NAME)
+    return render_template("boards.html", results=results, site_name=SITE_NAME)
 
-@app.route('/b/<board>/')
+@app.route("/b/<board>/")
 def load_board(board):
     req_board = board.lower().strip()
     db_init(req_board)
-    conn = sqlite3.connect('board.db')
+    conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     res = cur.execute(f'select rowid, * from {req_board}').fetchall()
     board_comments = []
     for comment in res:
-        board_comments.insert(0, [comment[0], comment[1], comment[2], comment[3].split('\n'), comment[4]])
-    return render_template('comments.html', board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+        board_comments.insert(0, [comment[0], comment[1], comment[2], comment[3].split("\n"), comment[4]])
+    return render_template("comments.html", board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
-@app.route('/go', methods=['GET', 'POST'])
+@app.route("/go", methods=["GET", "POST"])
 def go_to_board():
-    if request.method == 'GET':
-        return render_template('error.html', error='Method not allowed')
-    redirect_board = request.form.get('board', '').lower().strip()
+    if request.method == "GET":
+        return render_template("error.html", error="Method not allowed")
+    redirect_board = request.form.get("board", "").lower().strip()
     if not redirect_board:
-        return render_template('error.html', error='Board name must not be empty')
-    return redirect(f'/b/{redirect_board}/')
+        return render_template("error.html", error="Board name must not be empty")
+    return redirect(f"/b/{redirect_board}/")
 
-@app.route('/b/<board>/submit', methods=['GET', 'POST'])
+@app.route("/b/<board>/submit", methods=["GET", "POST"])
 def submit(board):
-    if request.method == 'GET':
-        return redirect('/')
+    if request.method == "GET":
+        return redirect("/")
     # get form args name, subject, text
     # only text is going to be actually required to post
-    name = request.form.get('name', '').strip()
-    subject = request.form.get('subject', '').strip()
-    text = request.form.get('text', '').strip()
+    name = request.form.get("name", "").strip()
+    subject = request.form.get("subject", "").strip()
+    text = request.form.get("text", "").strip()
 
     req_board = board.lower().strip()
 
     # if text is empty, error
     if not text:
-        return render_template('error.html', error='Text box must not be empty')
+        return render_template("error.html", error="Text box must not be empty")
 
     # limit comment length
     if len(text) > MAX_COMMENT_LENGTH:
-        return render_template('error.html', error=f'Text must be no more than {MAX_COMMENT_LENGTH} characters')
+        return render_template("error.html", error=f"Text must be no more than {MAX_COMMENT_LENGTH} characters")
 
     # if name is empty, set to default name
     if not name:
@@ -111,11 +111,11 @@ def submit(board):
         name,
         subject,
         text,
-        str(datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
+        str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))
         )
 
     db_init(req_board)
-    conn = sqlite3.connect('board.db')
+    conn = sqlite3.connect("board.db")
     cur = conn.cursor()
 
     # drop oldest post if at limit
@@ -125,7 +125,7 @@ def submit(board):
     cur.execute(f'insert into {req_board} values (?, ?, ?, ?)', comment_data)
     conn.commit()
 
-    return redirect(f'/b/{req_board}/')
+    return redirect(f"/b/{req_board}/")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
