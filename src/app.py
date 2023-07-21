@@ -40,7 +40,7 @@ def db_init(board_name):
     cur.execute(f'''create table if not exists {board_name} (
             name text,
             subject text,
-            reply text,
+            replyto text,
             text text,
             date text
             )''')
@@ -52,6 +52,7 @@ def index():
 
 @app.route("/boards")
 def list_boards():
+    # get all boards and sort
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     res = cur.execute('select name from sqlite_master where type="table"').fetchall()
@@ -64,23 +65,31 @@ def list_boards():
 
 @app.route("/b/<board>/")
 def load_board(board):
+    # get posts
     req_board = board.lower().strip()
     db_init(req_board)
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     res = cur.execute(f'select rowid, * from {req_board}').fetchall()
     board_comments = []
-    for comment in res:
+    for index, comment in enumerate(res):
         board_comments.insert(0, {
             "id": comment[0],
             "name": comment[1],
             "subject": comment[2],
-            "reply": comment[3],
+            "replyto": comment[3],
             "text": comment[4].split('\n'),
-            "date": comment[5]
+            "date": comment[5],
+            "replies": []
         })
-    reply = request.args.get("reply", "")
-    return render_template("comments.html", reply=reply, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+
+        # attach replies
+        for j in range(index, -1, -1):
+            if str(board_comments[j]['id']) == comment[3]:
+                board_comments[j]['replies'].append(comment[0])
+
+    replyto = request.args.get("replyto", "")
+    return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
 @app.route("/go", methods=["GET", "POST"])
 def go_to_board():
@@ -100,13 +109,12 @@ def submit(board):
     name = request.form.get("name", "").strip()
     subject = request.form.get("subject", "").strip()
     text = request.form.get("text", "").strip()
-    reply = request.form.get("reply", "").strip()
+    replyto = request.form.get("replyto", "").strip()
 
     req_board = board.lower().strip()
 
     # if invalid reply to id
-    if reply and not reply.isdigit():
-        print(reply)
+    if replyto and not replyto.isdigit():
         return render_template("error.html", error="Invalid reply ID")
 
     # if text is empty, error
@@ -125,7 +133,7 @@ def submit(board):
     comment_data = (
         name,
         subject,
-        reply,
+        replyto,
         text,
         str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))
         )
