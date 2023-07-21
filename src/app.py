@@ -76,7 +76,7 @@ def load_board(board):
             "name": comment[1],
             "subject": comment[2],
             "reply": comment[3],
-            "text": comment[4],
+            "text": comment[4].split('\n'),
             "date": comment[5]
         })
     reply = request.args.get("reply", "")
