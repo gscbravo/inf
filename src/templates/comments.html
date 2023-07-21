@@ -24,6 +24,8 @@
 			<input type="text" name="name" id="form-name" placeholder="{{ default_name }}"><br>
 			<label for="form-subject">Subject:</label>
 			<input type="text" name="subject" id="form-subject" placeholder="Subject"><br>
+			<label for="form-reply">Reply To:</label>
+			<input type="text" name="reply" value="{{ reply }}" id="form-reply" placeholder="Reply"><br>
 			<label for="form-text"><span id="form-req" title="Required">*</span> Comment:</label><br>
 			<textarea name="text" id="form-text" cols="35" rows="15" placeholder="Comment..." required></textarea><br>
 			<input type="submit" id="form-submit" value="Submit">
@@ -31,15 +33,19 @@
 		<!-- comment section -->
 		<h2>Comments Section (Total: {{ comments|length }})</h2>
 		{% for comment in comments %}
-		<div class="comment" id="p{{ comment[0] }}">
+		<div class="comment" id="p{{ comment['id'] }}">
 			<span class="comment-info">
-				<span class="comment-subject">{{ comment[2] }}</span>
-				<span class="comment-name">{{ comment[1] }}</span>
-				<span>{{ comment[4] }}</span>
-				<a href="#p{{ comment[0] }}" class="comment-id">No. {{ comment[0] }}</a>
+				<span class="comment-subject">{{ comment['subject'] }}</span>
+				<span class="comment-name">{{ comment['name'] }}</span>
+				<span>{{ comment['date'] }}</span>
+				<a href="#p{{ comment['id'] }}" class="comment-id">No. {{ comment['id'] }}</a>
+				<a href="?reply={{ comment['id']}}" class="comment-reply">Reply</a>
 			</span><br>
+			{% if comment['reply'] %}
+			<div><a href="#p{{ comment['reply'] }}" class="comment-replyto">@{{ comment['reply'] }}</a></div>
+			{% endif %}
 			<span class="comment-text">
-				{% for line in comment[3] %}
+				{% for line in comment['text'] %}
 				{{ line }}
 				{% if not loop.last %}
 				<br>

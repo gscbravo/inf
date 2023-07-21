@@ -41,6 +41,9 @@ textarea {
 .comment-id {
 	text-decoration: underline;
 }
+.comment-reply {
+	text-decoration: underline;
+}
 .comment-subject {
 	font-weight: bold;
 	font-size: 1.2em;

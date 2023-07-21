@@ -40,6 +40,7 @@ def db_init(board_name):
     cur.execute(f'''create table if not exists {board_name} (
             name text,
             subject text,
+            reply text,
             text text,
             date text
             )''')
@@ -70,8 +71,16 @@ def load_board(board):
     res = cur.execute(f'select rowid, * from {req_board}').fetchall()
     board_comments = []
     for comment in res:
-        board_comments.insert(0, [comment[0], comment[1], comment[2], comment[3].split("\n"), comment[4]])
-    return render_template("comments.html", board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+        board_comments.insert(0, {
+            "id": comment[0],
+            "name": comment[1],
+            "subject": comment[2],
+            "reply": comment[3],
+            "text": comment[4],
+            "date": comment[5]
+        })
+    reply = request.args.get("reply", "")
+    return render_template("comments.html", reply=reply, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
 @app.route("/go", methods=["GET", "POST"])
 def go_to_board():
@@ -91,8 +100,14 @@ def submit(board):
     name = request.form.get("name", "").strip()
     subject = request.form.get("subject", "").strip()
     text = request.form.get("text", "").strip()
+    reply = request.form.get("reply", "").strip()
 
     req_board = board.lower().strip()
+
+    # if invalid reply to id
+    if reply and not reply.isdigit():
+        print(reply)
+        return render_template("error.html", error="Invalid reply ID")
 
     # if text is empty, error
     if not text:
@@ -110,6 +125,7 @@ def submit(board):
     comment_data = (
         name,
         subject,
+        reply,
         text,
         str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))
         )
@@ -122,7 +138,7 @@ def submit(board):
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
         cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
 
-    cur.execute(f'insert into {req_board} values (?, ?, ?, ?)', comment_data)
+    cur.execute(f'insert into {req_board} values (?, ?, ?, ?, ?)', comment_data)
     conn.commit()
 
     return redirect(f"/b/{req_board}/")
