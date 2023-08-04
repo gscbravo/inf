@@ -16,17 +16,21 @@ identify it. A board can be created using the search at the top of the main
 page, or by typing a URL in the form of `/b/<board>`. Board names
 are case insensitive.
 
-The defaults for the forum are found in variables at the top of `app.py`.
+The defaults for the forum can be configured in the file `config.toml` that is
+created once the program is run. Config file is read upon the program starting,
+so it will have to be restarted if config file changes are made.
 
 ### Defaults
 - Maximum number of comments per board: `1000`
 - Maximum comment length: `2000`
 - Post name: `Guest`
 - Site name: `Infinity Forums`
-- Site description: `Infinity Forums open comments section`
+- Site description: `Infinity Forums comments section`
 - Default board: `general`
 
 ## Usage
+
+For simple development.
 
 ```
 pip3 install flask
@@ -39,7 +43,6 @@ with [Nginx](https://nginx.org/).
 ## TODO
 
 - [ ] Make sure this works with multiple processes as workers
-- [ ] Config file to configure settings
 - [ ] Website admin area to configure settings
 - [ ] Tripcodes
 - [ ] Image upload

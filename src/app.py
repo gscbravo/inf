@@ -17,19 +17,39 @@
 from datetime import datetime, timezone
 from flask import Flask, render_template, redirect, request
 import sqlite3
+import os
+import configparser
+
+DEFAULT_CONFIG = """[Config]
+max_comments = 1000
+max_comment_length = 2000
+default_name = Guest
+site_name = Infinity Forums
+site_description = Infinity Forums comments section
+default_board = general
+"""
+
+# create config if none created
+if not os.path.isfile("config.toml"):
+    with open("config.toml", "w") as f:
+        f.write(DEFAULT_CONFIG)
+
+# read config file
+parser = configparser.ConfigParser()
+parser.read_file(open("config.toml"))
 
 # max number of comments to store
-MAX_COMMENTS = 1000
+MAX_COMMENTS = int(parser.get("Config", "max_comments"))
 # max chars in comment
-MAX_COMMENT_LENGTH = 2000
+MAX_COMMENT_LENGTH = int(parser.get("Config", "max_comment_length"))
 # default name
-DEFAULT_NAME = "Guest"
+DEFAULT_NAME = parser.get("Config", "default_name")
 # site name
-SITE_NAME = "Infinity Forums"
+SITE_NAME = parser.get("Config", "site_name")
 # site description
-SITE_DESCRIPTION = "Infinity Forums open comments section"
+SITE_DESCRIPTION = parser.get("Config", "site_description")
 # default board name
-DEFAULT_BOARD = "general"
+DEFAULT_BOARD = parser.get("Config", "default_board")
 
 app = Flask(__name__)
 
