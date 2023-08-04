@@ -86,7 +86,7 @@ def list_boards():
 @app.route("/b/<board>/")
 def load_board(board):
     # get posts
-    req_board = board.lower().strip()
+    req_board = board.lower().strip().replace(" ", "")
     db_init(req_board)
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
@@ -115,7 +115,7 @@ def load_board(board):
 def go_to_board():
     if request.method == "GET":
         return render_template("error.html", error="Method not allowed")
-    redirect_board = request.form.get("board", "").lower().strip()
+    redirect_board = request.form.get("board", "").lower().strip().replace(" ", "")
     if not redirect_board:
         return render_template("error.html", error="Board name must not be empty")
     return redirect(f"/b/{redirect_board}/")
@@ -131,7 +131,7 @@ def submit(board):
     text = request.form.get("text", "").strip()
     replyto = request.form.get("replyto", "").strip()
 
-    req_board = board.lower().strip()
+    req_board = board.lower().strip().replace(" ", "")
 
     # if invalid reply to id
     if replyto and not replyto.isdigit():
