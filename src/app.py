@@ -87,9 +87,14 @@ def list_boards():
 def load_board(board):
     # get posts
     req_board = board.lower().strip().replace(" ", "")
-    db_init(req_board)
+    replyto = request.args.get("replyto", "")
+
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
+
+    if not cur.execute(f'select name from sqlite_master where type="table" and name="{req_board}"').fetchall():
+        return render_template("comments.html", replyto=replyto, board_name=req_board, comments=[], default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+
     res = cur.execute(f'select rowid, * from {req_board}').fetchall()
     board_comments = []
     for index, comment in enumerate(res):
@@ -108,7 +113,6 @@ def load_board(board):
             if str(board_comments[j]['id']) == comment[3]:
                 board_comments[j]['replies'].append(comment[0])
 
-    replyto = request.args.get("replyto", "")
     return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
 @app.route("/go", methods=["GET", "POST"])
