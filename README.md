@@ -42,7 +42,6 @@ with [Nginx](https://nginx.org/).
 
 ## TODO
 
-- [ ] Make sure this works with multiple processes as workers
 - [ ] Website admin area to configure settings
 - [ ] Tripcodes
 - [ ] Image upload
