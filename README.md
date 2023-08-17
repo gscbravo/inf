@@ -25,7 +25,7 @@ so it will have to be restarted if config file changes are made.
 - Maximum comment length: `2000`
 - Post name: `Guest`
 - Site name: `Infinity Forums`
-- Site description: `Infinity Forums comments section`
+- Site description: `comments section`
 - Default board: `general`
 
 ## Usage

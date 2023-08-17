@@ -25,7 +25,7 @@ max_comments = 1000
 max_comment_length = 2000
 default_name = Guest
 site_name = Infinity Forums
-site_description = Infinity Forums comments section
+site_description = comments section
 default_board = general
 """
 
