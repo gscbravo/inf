@@ -46,3 +46,5 @@ with [Nginx](https://nginx.org/).
 - [ ] Tripcodes
 - [ ] Image upload
 - [ ] Moderation of comments
+- [ ] Store date and time as Unix timestamp
+- [ ] Be able to only specify partial config
