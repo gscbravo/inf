@@ -16,7 +16,7 @@ identify it. A board can be created using the search at the top of the main
 page, or by typing a URL in the form of `/b/<board>`. Board names
 are case insensitive.
 
-The defaults for the forum can be configured in the file `config.toml` that is
+The defaults for the forum can be configured in the file `config.ini` that is
 created once the program is run. Config file is read upon the program starting,
 so it will have to be restarted if config file changes are made.
 
@@ -47,4 +47,3 @@ with [Nginx](https://nginx.org/).
 - [ ] Image upload
 - [ ] Moderation of comments
 - [ ] Store date and time as Unix timestamp
-- [ ] Be able to only specify partial config

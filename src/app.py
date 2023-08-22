@@ -20,36 +20,36 @@ import sqlite3
 import os
 import configparser
 
-DEFAULT_CONFIG = """[Config]
-max_comments = 1000
-max_comment_length = 2000
-default_name = Guest
-site_name = Infinity Forums
-site_description = comments section
-default_board = general
-"""
+parser = configparser.ConfigParser()
 
 # create config if none created
-if not os.path.isfile("config.toml"):
-    with open("config.toml", "w") as f:
-        f.write(DEFAULT_CONFIG)
+if not os.path.isfile("config.ini"):
+    with open("config.ini", "w") as f:
+        parser['config'] = {
+            "max_comments": 1000,
+            "max_comment_length": 2000,
+            "default_name": "Guest",
+            "site_name": "Infinity Forums",
+            "site_description": "comments section",
+            "default_board": "general"
+        }
+        parser.write(f)
 
 # read config file
-parser = configparser.ConfigParser()
-parser.read_file(open("config.toml"))
+parser.read_file(open("config.ini"))
 
 # max number of comments to store
-MAX_COMMENTS = int(parser.get("Config", "max_comments"))
+MAX_COMMENTS = int(parser.get("config", "max_comments", fallback=1000))
 # max chars in comment
-MAX_COMMENT_LENGTH = int(parser.get("Config", "max_comment_length"))
+MAX_COMMENT_LENGTH = int(parser.get("config", "max_comment_length", fallback=2000))
 # default name
-DEFAULT_NAME = parser.get("Config", "default_name")
+DEFAULT_NAME = parser.get("config", "default_name", fallback="Guest")
 # site name
-SITE_NAME = parser.get("Config", "site_name")
+SITE_NAME = parser.get("config", "site_name", fallback="Infinity Forums")
 # site description
-SITE_DESCRIPTION = parser.get("Config", "site_description")
+SITE_DESCRIPTION = parser.get("config", "site_description", fallback="comments section")
 # default board name
-DEFAULT_BOARD = parser.get("Config", "default_board")
+DEFAULT_BOARD = parser.get("config", "default_board", fallback="general")
 
 app = Flask(__name__)
 
