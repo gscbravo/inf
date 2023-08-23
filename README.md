@@ -28,6 +28,21 @@ so it will have to be restarted if config file changes are made.
 - Site description: `comments section`
 - Default board: `general`
 
+### Config
+
+Lines not present will be replaced with the default value. Only the `[config]`
+line is required. Place the config in `src/config.ini`.
+
+```
+[config]
+max_comments = 1000
+max_comment_length = 2000
+default_name = Guest
+site_name = Infinity Forums
+site_description = comments section
+default_board = general
+```
+
 ## Usage
 
 For simple development.
