@@ -19,6 +19,7 @@ from flask import Flask, render_template, redirect, request
 import sqlite3
 import os
 import configparser
+import string
 
 parser = configparser.ConfigParser()
 
@@ -66,6 +67,11 @@ def db_init(board_name):
             )''')
     conn.commit()
 
+# turn input to proper board name
+def filter_name(str):
+    allowed_chars = f"{string.digits}{string.ascii_letters}_"
+    return "".join(c for c in str if c in allowed_chars)
+
 @app.route("/")
 def index():
     return redirect(f"/b/{DEFAULT_BOARD}/")
@@ -86,7 +92,7 @@ def list_boards():
 @app.route("/b/<board>/")
 def load_board(board):
     # get posts
-    req_board = board.lower().strip().replace(" ", "")
+    req_board = filter_name(board.lower().strip())
     replyto = request.args.get("replyto", "")
 
     conn = sqlite3.connect("board.db")
@@ -119,7 +125,7 @@ def load_board(board):
 def go_to_board():
     if request.method == "GET":
         return render_template("error.html", error="Method not allowed")
-    redirect_board = request.form.get("board", "").lower().strip().replace(" ", "")
+    redirect_board = filter_name(request.form.get("board", "").lower().strip())
     if not redirect_board:
         return render_template("error.html", error="Board name must not be empty")
     return redirect(f"/b/{redirect_board}/")
@@ -135,7 +141,7 @@ def submit(board):
     text = request.form.get("text", "").strip()
     replyto = request.form.get("replyto", "").strip()
 
-    req_board = board.lower().strip().replace(" ", "")
+    req_board = filter_name(board.lower().strip())
 
     # if invalid reply to id
     if replyto and not replyto.isdigit():
