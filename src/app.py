@@ -23,8 +23,8 @@ import configparser
 parser = configparser.ConfigParser()
 
 # create config if none created
-if not os.path.isfile("config.ini"):
-    with open("config.ini", "w") as f:
+if not os.path.isfile("config.toml"):
+    with open("config.toml", "w") as f:
         parser['config'] = {
             "max_comments": 1000,
             "max_comment_length": 2000,
@@ -36,7 +36,7 @@ if not os.path.isfile("config.ini"):
         parser.write(f)
 
 # read config file
-parser.read_file(open("config.ini"))
+parser.read_file(open("config.toml"))
 
 # max number of comments to store
 MAX_COMMENTS = int(parser.get("config", "max_comments", fallback=1000))
