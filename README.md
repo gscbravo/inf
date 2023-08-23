@@ -62,3 +62,4 @@ with [Nginx](https://nginx.org/).
 - [ ] Image upload
 - [ ] Moderation of comments
 - [ ] Store date and time as Unix timestamp
+- [ ] Log IPs for better moderation
