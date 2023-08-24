@@ -85,7 +85,7 @@ def list_boards():
     results = {}
     for item in res:
         item_size = cur.execute(f'select rowid from {item[0]} order by rowid desc limit 1').fetchone()
-        results[item[0]] = item_size[0] if item_size else 0
+        results[item[0]] = item_size[0]
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     return render_template("boards.html", results=results, site_name=SITE_NAME)
 
