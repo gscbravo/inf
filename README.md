@@ -21,7 +21,9 @@ created once the program is run. Config file is read upon the program starting,
 so it will have to be restarted if config file changes are made.
 
 You can greentext by starting a line with the ">" character. You can orangetext
-by starting a line with the "<" character.
+by starting a line with the "<" character. Boards can use the letters of the
+alphabet, as well as numbers, however, they cannot start with a number due to
+technical limitations on behalf of SQLite.
 
 ### Defaults
 - Maximum number of comments per board: `1000`

@@ -70,7 +70,7 @@ def db_init(board_name):
 # turn input to proper board name
 def filter_name(str):
     allowed_chars = f"{string.digits}{string.ascii_letters}_"
-    return "".join(c for c in str if c in allowed_chars)
+    return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
 @app.route("/")
 def index():
