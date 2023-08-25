@@ -125,7 +125,14 @@ def load_board(board):
 def go_to_board():
     if request.method == "GET":
         return render_template("error.html", error="Method not allowed")
-    redirect_board = filter_name(request.form.get("board", "").lower().strip())
+
+    # filter board name and make sure it doesn't start with a digit
+    allowed_chars = f"{string.digits}{string.ascii_letters}_"
+    redirect_board = "".join(c for c in request.form.get("board", "").lower().strip() if c in allowed_chars)
+    if redirect_board[0].isdigit():
+        return render_template("error.html", error="Board name must not start with a digit")
+    redirect_board = redirect_board.lstrip("1234567890")
+
     if not redirect_board:
         return render_template("error.html", error="Board name must not be empty")
     return redirect(f"/b/{redirect_board}/")
