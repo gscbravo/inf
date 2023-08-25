@@ -49,7 +49,11 @@
 			{% endif %}
 			<span class="comment-text">
 				{% for line in comment['text'] %}
+				{% if line.startswith(">") %}
+				<span class="greentext">{{ line }}</span>
+				{% else %}
 				{{ line }}
+				{% endif %}
 				{% if not loop.last %}
 				<br>
 				{% endif %}
