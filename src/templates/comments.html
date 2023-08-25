@@ -51,6 +51,8 @@
 				{% for line in comment['text'] %}
 				{% if line.startswith(">") %}
 				<span class="greentext">{{ line }}</span>
+				{% elif line.startswith("<") %}
+				<span class="orangetext">{{ line }}</span>
 				{% else %}
 				{{ line }}
 				{% endif %}

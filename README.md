@@ -20,7 +20,8 @@ The defaults for the forum can be configured in the file `config.toml` that is
 created once the program is run. Config file is read upon the program starting,
 so it will have to be restarted if config file changes are made.
 
-You can quote text by starting a line with the ">" character.
+You can greentext by starting a line with the ">" character. You can orangetext
+by starting a line with the "<" character.
 
 ### Defaults
 - Maximum number of comments per board: `1000`
