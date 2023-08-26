@@ -69,3 +69,4 @@ with [Nginx](https://nginx.org/).
 - [ ] Store date and time as Unix timestamp
 - [ ] Log IPs for better moderation
 - [ ] Reply to multiple comments
+- [ ] Code blocks

@@ -54,6 +54,10 @@ DEFAULT_BOARD = parser.get("config", "default_board", fallback="general")
 
 app = Flask(__name__)
 
+# jinja config
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 # initialize database if doesn't exist
 def db_init(board_name):
     conn = sqlite3.connect("board.db")
