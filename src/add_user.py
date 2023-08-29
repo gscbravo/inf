@@ -17,9 +17,10 @@ conn = sqlite3.connect("staff.db")
 cur = conn.cursor()
 
 cur.execute(f"""create table if not exists staff (
-            username text,
-            password text
-            )""")
+    id integer primary key autoincrement,
+    username text,
+    password text
+)""")
 
 conn.commit()
 
@@ -28,5 +29,5 @@ if res:
     print("Username already exists")
     sys.exit(1)
 
-cur.execute("insert into staff values (?, ?)", (username, generate_password_hash(password)))
+cur.execute("insert into staff values (NULL, ?, ?)", (username, generate_password_hash(password)))
 conn.commit()

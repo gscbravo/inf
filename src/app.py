@@ -72,22 +72,22 @@ def staff_init():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
     cur.execute(f"""create table if not exists staff (
-            username text,
-            password text
-            )""")
+        username text,
+        password text
+    )""")
 staff_init()
 
 # initialize database if doesn't exist
 def db_init(board_name):
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
-    cur.execute(f'''create table if not exists {board_name} (
-            name text,
-            subject text,
-            replyto text,
-            text text,
-            date text
-            )''')
+    cur.execute(f"""create table if not exists {board_name} (
+        name text,
+        subject text,
+        replyto text,
+        text text,
+        date text
+    )""")
     conn.commit()
 
 # turn input to proper board name
