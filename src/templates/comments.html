@@ -25,6 +25,10 @@
 		<form action="submit" method="post" id="comment-form">
 			<label for="form-name">Name:</label>
 			<input type="text" name="name" id="form-name" placeholder="{{ default_name }}"><br>
+			{% if session['user'] %}
+			<label for="form-staff">Post as staff:</label>
+			<input type="checkbox" name="staff" id="form-staff" value="true"><br>
+			{% endif %}
 			<label for="form-subject">Subject:</label>
 			<input type="text" name="subject" id="form-subject" placeholder="Subject"><br>
 			<label for="form-replyto">Reply To:</label>
@@ -39,7 +43,11 @@
 		<div class="comment" id="p{{ comment['id'] }}">
 			<span class="comment-info">
 				<span class="comment-subject">{{ comment['subject'] }}</span>
+				{% if comment['staff'] %}
+				<span class="comment-staff">STAFF</span>
+				{% else %}
 				<span class="comment-name">{{ comment['name'] }}</span>
+				{% endif %}
 				<span>{{ comment['date'] }}</span>
 				<a href="#p{{ comment['id'] }}" class="comment-id">No. {{ comment['id'] }}</a>
 				<a href="?replyto={{ comment['id']}}" class="comment-reply">Reply</a>
@@ -50,7 +58,7 @@
 			{% if comment['replyto'] %}
 			<div><a href="#p{{ comment['replyto'] }}" class="comment-replyto">@{{ comment['replyto'] }}</a></div>
 			{% endif %}
-			<span class="comment-text">
+			<div class="comment-text">
 				{% for line in comment['text'] %}
 				{% if line.startswith(">") %}
 				<span class="greentext">{{ line }}</span>
@@ -63,7 +71,7 @@
 				<br>
 				{% endif %}
 				{% endfor %}
-			</span>
+			</div>
 			{% if session['user'] %}
 			<p><a href="/delete?board={{ board_name }}&post={{ comment['id'] }}" class="delete">DELETE THIS</a></p>
 			{% endif %}

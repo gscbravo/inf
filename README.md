@@ -80,5 +80,4 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Prompt for admin account creation upon first startup of website
-- [ ] Post as staff
 - [ ] Report comments

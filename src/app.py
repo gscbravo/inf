@@ -87,7 +87,8 @@ def db_init(board_name):
         subject text,
         replyto text,
         text text,
-        date text
+        date text,
+        staff text
     )""")
     conn.commit()
 
@@ -200,7 +201,8 @@ def load_board(board):
             "replyto": comment[3],
             "text": comment[4].split('\n'),
             "date": comment[5],
-            "replies": []
+            "replies": [],
+            "staff": comment[6]
         })
 
         # attach replies
@@ -236,6 +238,12 @@ def submit(board):
     subject = request.form.get("subject", "").strip()
     text = request.form.get("text", "").strip()
     replyto = request.form.get("replyto", "").strip()
+    staff = request.form.get("staff", "").strip()
+
+    if "user" in session and staff:
+        staff = session['user']
+    else:
+        staff = ""
 
     req_board = filter_name(board.lower().strip())
 
@@ -269,8 +277,9 @@ def submit(board):
         subject,
         replyto,
         text,
-        str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))
-        )
+        str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")),
+        staff
+    )
 
     db_init(req_board)
     conn = sqlite3.connect("board.db")
@@ -280,7 +289,7 @@ def submit(board):
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
         cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
 
-    cur.execute(f'insert into {req_board} values (?, ?, ?, ?, ?)', comment_data)
+    cur.execute(f'insert into {req_board} values (?, ?, ?, ?, ?, ?)', comment_data)
     conn.commit()
 
     return redirect(f"/b/{req_board}/")

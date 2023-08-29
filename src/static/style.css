@@ -23,6 +23,10 @@ input[type=text], input[type=password] {
 	font-size: 1.1em;
 	background-color: #ffffff;
 }
+input[type=checkbox] {
+	width: 1.4em;
+	height: 1.4em;
+}
 textarea {
 	font-size: 1.1em;
 	background-color: #ffffff;
@@ -30,13 +34,14 @@ textarea {
 .comment {
 	background-color: #200136;
 	border-radius: 10px;
-	margin: .5em 0;
-	padding: .5em;
+	margin: 8px 0;
+	padding: 8px;
 }
 .comment-name {
 	font-weight: bold;
 	font-size: 1.2em;
 	color: #00ff00;
+	overflow-wrap: break-word;
 }
 .comment-id {
 	text-decoration: underline;
@@ -48,6 +53,7 @@ textarea {
 	font-weight: bold;
 	font-size: 1.2em;
 	color: #ff0000;
+	overflow-wrap: break-word;
 }
 a {
 	color: #fff;
@@ -65,6 +71,7 @@ a:hover {
 }
 .comment-text {
 	overflow-wrap: break-word;
+	margin: 8px 0;
 }
 .greentext {
 	color: #00ff00;
@@ -77,4 +84,10 @@ a:hover {
 }
 .delete:hover {
 	font-size: 1.3em;
+}
+.comment-staff {
+	font-weight: bold;
+	font-size: 1.2em;
+	color: #00ffff;
+	text-decoration: underline 1px;
 }
