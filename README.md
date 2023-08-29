@@ -77,10 +77,6 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Prompt for admin account creation upon first startup of website
-- [ ] Tripcodes
-- [ ] Image upload
 - [ ] Post as staff
-- [ ] Store date and time as Unix timestamp
-- [ ] Log IPs for better moderation
-- [ ] Reply to multiple comments
-- [ ] Code blocks
+- [ ] Report comments
+- [ ] Update `src/add_user.py` to be able to change passwords and delete accounts
