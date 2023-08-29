@@ -107,7 +107,7 @@ def login():
             return redirect("/")
         return render_template("login.html")
     
-    username = request.form.get("username", "").strip()
+    username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
 
     if not username or not password:

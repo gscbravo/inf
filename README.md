@@ -62,13 +62,16 @@ cd src
 flask run
 ```
 
-Then you can create an admin account using `src/add_user.py`. You can use
+Then you can create an admin account using `src/admin.py`. You can use
 this to delete comments. Be sure to change app.config['SECRET_KEY'] in
 `src/app.py` to something more secure. You can login at `/login`.
 
 ```
-python3 add_user.py
+python3 admin.py add
 ```
+
+You can change your password by using `change` and delete your account
+by using `delete`.
 
 When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/)
 with [Nginx](https://nginx.org/).
@@ -79,4 +82,3 @@ with [Nginx](https://nginx.org/).
 - [ ] Prompt for admin account creation upon first startup of website
 - [ ] Post as staff
 - [ ] Report comments
-- [ ] Update `src/add_user.py` to be able to change passwords and delete accounts
