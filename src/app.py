@@ -72,6 +72,7 @@ def staff_init():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
     cur.execute(f"""create table if not exists staff (
+        id integer primary key autoincrement,
         username text,
         password text
     )""")
