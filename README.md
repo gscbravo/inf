@@ -64,7 +64,7 @@ flask run
 
 Then you can create an admin account using `add_user.py`. You can use this to
 delete comments. Be sure to change app.config['SECRET_KEY'] to something more
-secure.
+secure. You can login at `/login`.
 
 ```
 python3 add_user.py
