@@ -22,6 +22,11 @@ import os
 import configparser
 import string
 
+app = Flask(__name__)
+
+# CHANGE THIS!!!
+app.config['SECRET_KEY'] = "CHANGE ME TO SOMETHING SECURE"
+
 parser = configparser.ConfigParser()
 
 # create config if none created
@@ -58,11 +63,6 @@ SITE_NAME = parser.get("config", "site_name", fallback="Infinity Forums")
 SITE_DESCRIPTION = parser.get("config", "site_description", fallback="comments section")
 # default board name
 DEFAULT_BOARD = parser.get("config", "default_board", fallback="general")
-
-app = Flask(__name__)
-
-# change this to something better in practice
-app.config['SECRET_KEY'] = "CHANGE ME TO SOMETHING SECURE"
 
 # jinja config
 app.jinja_env.trim_blocks = True
