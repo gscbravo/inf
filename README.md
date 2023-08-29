@@ -27,8 +27,10 @@ technical limitations on behalf of SQLite.
 
 ### Defaults
 - Maximum number of comments per board: `1000`
+- Maximum subject length: `78`
+- Maximum name length: `50`
 - Maximum comment length: `2000`
-- Post name: `Guest`
+- Default post name: `Guest`
 - Site name: `Infinity Forums`
 - Site description: `comments section`
 - Default board: `general`
@@ -41,6 +43,8 @@ line is required. Place the config in `src/config.toml`.
 ```
 [config]
 max_comments = 1000
+max_subject_length = 78
+max_name_length = 50
 max_comment_length = 2000
 default_name = Guest
 site_name = Infinity Forums
@@ -54,7 +58,15 @@ For simple development.
 
 ```
 pip3 install flask
+cd src
 flask run
+```
+
+Then you can create an admin account using `add_user.py`, which will store the account information
+in `staff.db`. You can use this to delete comments.
+
+```
+python3 add_user.py
 ```
 
 When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/)
@@ -63,9 +75,10 @@ with [Nginx](https://nginx.org/).
 ## TODO
 
 - [ ] Website admin area to configure settings
+- [ ] Prompt for admin account creation upon first startup of website
 - [ ] Tripcodes
 - [ ] Image upload
-- [ ] Moderation of comments
+- [ ] Post as staff
 - [ ] Store date and time as Unix timestamp
 - [ ] Log IPs for better moderation
 - [ ] Reply to multiple comments

@@ -10,6 +10,10 @@
 </head>
 <body>
 	<div class="wrapper">
+		{% if session['user'] %}
+		<p>Hello, {{ session['user'] }}</p>
+		<p><a href="/logout">Logout</a></p>
+		{% endif %}
 		<h1><a href="/b/{{ board_name }}/">{{ board_name }}</a> - {{ site_name }}</h1>
 		<!-- forum options -->
 		<h2><a href="/boards" id="created-boards">Created Boards</a></h2>
@@ -61,6 +65,9 @@
 				{% endif %}
 				{% endfor %}
 			</span>
+			{% if session['user'] %}
+			<p><a href="/delete?board={{ board_name }}&post={{ comment['id'] }}" class="delete">DELETE THIS</a></p>
+			{% endif %}
 		</div>
 		{% endfor %}
 	</div>

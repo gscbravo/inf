@@ -19,7 +19,7 @@ input[type=submit] {
 #form-text {
 	width: 100%;
 }
-input[type=text] {
+input[type=text], input[type=password] {
 	font-size: 1.1em;
 	background-color: #ffffff;
 }
@@ -71,4 +71,10 @@ a:hover {
 }
 .orangetext {
 	color: #ff8000;
+}
+.delete {
+	color: #ff8000;
+}
+.delete:hover {
+	font-size: 1.3em;
 }

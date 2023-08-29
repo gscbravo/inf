@@ -15,7 +15,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from datetime import datetime, timezone
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
+from werkzeug.security import check_password_hash
 import sqlite3
 import os
 import configparser
@@ -28,6 +29,8 @@ if not os.path.isfile("config.toml"):
     with open("config.toml", "w") as f:
         parser['config'] = {
             "max_comments": 1000,
+            "max_subject_length": 78,
+            "max_name_length": 50,
             "max_comment_length": 2000,
             "default_name": "Guest",
             "site_name": "Infinity Forums",
@@ -41,6 +44,10 @@ parser.read_file(open("config.toml"))
 
 # max number of comments to store
 MAX_COMMENTS = int(parser.get("config", "max_comments", fallback=1000))
+# max chars in subject
+MAX_SUBJECT_LENGTH = int(parser.get("config", "max_subject_length", fallback=78))
+# max chars in name
+MAX_NAME_LENGTH = int(parser.get("config", "max_name_length", fallback=50))
 # max chars in comment
 MAX_COMMENT_LENGTH = int(parser.get("config", "max_comment_length", fallback=2000))
 # default name
@@ -54,9 +61,21 @@ DEFAULT_BOARD = parser.get("config", "default_board", fallback="general")
 
 app = Flask(__name__)
 
+# change this to something better in practice
+app.config['SECRET_KEY'] = "CHANGE ME TO SOMETHING SECURE"
+
 # jinja config
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
+
+def staff_init():
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+    cur.execute(f"""create table if not exists staff (
+            username text,
+            password text
+            )""")
+staff_init()
 
 # initialize database if doesn't exist
 def db_init(board_name):
@@ -80,6 +99,66 @@ def filter_name(str):
 def index():
     return redirect(f"/b/{DEFAULT_BOARD}/")
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        if "user" in session:
+            return redirect("/")
+        return render_template("login.html")
+    
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+
+    if not username or not password:
+        return render_template("error.html", error="Username or password cannot be empty")
+    
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    res = cur.execute("select * from staff where username=?", (username,)).fetchone()
+    if not res:
+        return render_template("error.html", error="Invalid login")
+
+    if not check_password_hash(res[1], password):
+        return render_template("error.html", error="Invalid login")
+
+    session['user'] = username
+
+    return redirect("/")
+
+@app.route("/logout")
+def logout():
+    # remove user session
+    session.pop("user", None)
+    return redirect("/")
+
+@app.route("/delete")
+def delete():
+    if "user" not in session:
+        return redirect("/")
+    
+    board = filter_name(request.args.get("board", ""))
+    post = request.args.get("post", "")
+
+    if not post:
+        if not board:
+            return redirect("/")
+        return redirect("/b/{board}/")
+    
+    if not post.isdigit():
+        return render_template("error.html", error="Invalid ID")
+
+    conn = sqlite3.connect("board.db")
+    cur = conn.cursor()
+
+    if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
+        return render_template("error.html", error="Board does not exist")
+
+    cur.execute(f"delete from {board} where rowid=?", (post,))
+    conn.commit()
+
+    return redirect(f"/b/{board}/")
+
 @app.route("/boards")
 def list_boards():
     # get all boards and sort
@@ -88,8 +167,13 @@ def list_boards():
     res = cur.execute('select name from sqlite_master where type="table"').fetchall()
     results = {}
     for item in res:
+        # attach size
         item_size = cur.execute(f'select rowid from {item[0]} order by rowid desc limit 1').fetchone()
-        results[item[0]] = item_size[0]
+        results[item[0]] = item_size[0] if item_size is not None else 0
+
+        # remove if no posts
+        if results[item[0]] == 0:
+            results.pop(item[0])
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     return render_template("boards.html", results=results, site_name=SITE_NAME)
 
@@ -161,10 +245,18 @@ def submit(board):
     # if text is empty, error
     if not text:
         return render_template("error.html", error="Text box must not be empty")
+    
+    # limit subject length
+    if len(subject) > MAX_SUBJECT_LENGTH:
+        return render_template("error.html", error=f"Subject must be no more than {MAX_SUBJECT_LENGTH} characters")
+    
+    # limit name length
+    if len(name) > MAX_NAME_LENGTH:
+        return render_template("error.html", error=f"Name must be no more than {MAX_NAME_LENGTH} characters")
 
     # limit comment length
     if len(text) > MAX_COMMENT_LENGTH:
-        return render_template("error.html", error=f"Text must be no more than {MAX_COMMENT_LENGTH} characters")
+        return render_template("error.html", error=f"Comment must be no more than {MAX_COMMENT_LENGTH} characters")
 
     # if name is empty, set to default name
     if not name:
