@@ -120,7 +120,7 @@ def login():
     if not res:
         return render_template("error.html", error="Invalid login")
 
-    if not check_password_hash(res[1], password):
+    if not check_password_hash(res[2], password):
         return render_template("error.html", error="Invalid login")
 
     session['user'] = username
