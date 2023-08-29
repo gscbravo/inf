@@ -16,9 +16,9 @@ identify it. A board can be created using the search at the top of the main
 page, or by typing a URL in the form of `/b/<board>`. Board names
 are case insensitive.
 
-The defaults for the forum can be configured in the file `config.toml` that is
-created once the program is run. Config file is read upon the program starting,
-so it will have to be restarted if config file changes are made.
+The defaults for the forum can be configured in the file `src/config.toml` that
+is created once the program is run. Config file is read upon the program
+starting, so it will have to be restarted if config file changes are made.
 
 You can greentext by starting a line with the ">" character. You can orangetext
 by starting a line with the "<" character. Boards can use the letters of the
@@ -62,9 +62,9 @@ cd src
 flask run
 ```
 
-Then you can create an admin account using `add_user.py`. You can use this to
-delete comments. Be sure to change app.config['SECRET_KEY'] to something more
-secure. You can login at `/login`.
+Then you can create an admin account using `src/add_user.py`. You can use
+this to delete comments. Be sure to change app.config['SECRET_KEY'] in
+`src/app.py` to something more secure. You can login at `/login`.
 
 ```
 python3 add_user.py
