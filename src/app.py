@@ -83,6 +83,7 @@ def db_init(board_name):
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
     cur.execute(f"""create table if not exists {board_name} (
+        id integer primary key autoincrement,
         name text,
         subject text,
         replyto text,
@@ -94,7 +95,7 @@ def db_init(board_name):
 
 # turn input to proper board name
 def filter_name(str):
-    allowed_chars = f"{string.digits}{string.ascii_letters}_"
+    allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
 @app.route("/")
@@ -149,6 +150,9 @@ def delete():
     
     if not post.isdigit():
         return render_template("error.html", error="Invalid ID")
+    
+    if board == "sqlite_sequence":
+        return render_template("error.html", error="Board does not exist")
 
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
@@ -156,7 +160,7 @@ def delete():
     if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
         return render_template("error.html", error="Board does not exist")
 
-    cur.execute(f"delete from {board} where rowid=?", (post,))
+    cur.execute(f"delete from {board} where id=?", (post,))
     conn.commit()
 
     return redirect(f"/b/{board}/")
@@ -166,11 +170,11 @@ def list_boards():
     # get all boards and sort
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
-    res = cur.execute('select name from sqlite_master where type="table"').fetchall()
+    res = cur.execute('select name from sqlite_master where type="table" and name!="sqlite_sequence"').fetchall()
     results = {}
     for item in res:
         # attach size
-        item_size = cur.execute(f'select rowid from {item[0]} order by rowid desc limit 1').fetchone()
+        item_size = cur.execute(f'select max(id) from {item[0]}').fetchone()
         results[item[0]] = item_size[0] if item_size is not None else 0
 
         # remove if no posts
@@ -191,7 +195,7 @@ def load_board(board):
     if not cur.execute(f'select name from sqlite_master where type="table" and name="{req_board}"').fetchall():
         return render_template("comments.html", replyto=replyto, board_name=req_board, comments=[], default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
-    res = cur.execute(f'select rowid, * from {req_board}').fetchall()
+    res = cur.execute(f'select * from {req_board}').fetchall()
     board_comments = []
     for index, comment in enumerate(res):
         board_comments.insert(0, {
@@ -218,7 +222,7 @@ def go_to_board():
         return render_template("error.html", error="Method not allowed")
 
     # filter board name and make sure it doesn't start with a digit
-    allowed_chars = f"{string.digits}{string.ascii_letters}_"
+    allowed_chars = f"{string.digits}{string.ascii_letters}"
     redirect_board = "".join(c for c in request.form.get("board", "").lower().strip() if c in allowed_chars)
     if redirect_board[0].isdigit():
         return render_template("error.html", error="Board name must not start with a digit")
@@ -289,7 +293,7 @@ def submit(board):
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
         cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
 
-    cur.execute(f'insert into {req_board} values (?, ?, ?, ?, ?, ?)', comment_data)
+    cur.execute(f'insert into {req_board} values (NULL, ?, ?, ?, ?, ?, ?)', comment_data)
     conn.commit()
 
     return redirect(f"/b/{req_board}/")
