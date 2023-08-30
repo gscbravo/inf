@@ -71,18 +71,18 @@ app.jinja_env.lstrip_blocks = True
 def staff_init():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
-    cur.execute(f"""create table if not exists staff (
+    cur.execute(f'''create table if not exists staff (
         id integer primary key autoincrement,
         username text,
         password text
-    )""")
+    )''')
 staff_init()
 
 # initialize database if doesn't exist
 def db_init(board_name):
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
-    cur.execute(f"""create table if not exists {board_name} (
+    cur.execute(f'''create table if not exists {board_name} (
         id integer primary key autoincrement,
         name text,
         subject text,
@@ -90,7 +90,7 @@ def db_init(board_name):
         text text,
         date text,
         staff text
-    )""")
+    )''')
     conn.commit()
 
 # turn input to proper board name
@@ -118,7 +118,7 @@ def login():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
-    res = cur.execute("select * from staff where username=?", (username,)).fetchone()
+    res = cur.execute('select * from staff where username=?', (username,)).fetchone()
     if not res:
         return render_template("error.html", error="Invalid login")
 
@@ -160,7 +160,7 @@ def delete():
     if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
         return render_template("error.html", error="Board does not exist")
 
-    cur.execute(f"delete from {board} where id=?", (post,))
+    cur.execute(f'delete from {board} where id=?', (post,))
     conn.commit()
 
     return redirect(f"/b/{board}/")
@@ -205,14 +205,9 @@ def load_board(board):
             "replyto": comment[3],
             "text": comment[4].split('\n'),
             "date": comment[5],
-            "replies": [],
+            "replies": [item[0] for item in cur.execute(f'select id from {req_board} where replyto=? and id>=?', (comment[0], comment[0]))],
             "staff": comment[6]
         })
-
-        # attach replies
-        for j in range(index, -1, -1):
-            if str(board_comments[j]['id']) == comment[3]:
-                board_comments[j]['replies'].append(comment[0])
 
     return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
 
