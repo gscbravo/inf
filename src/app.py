@@ -230,7 +230,7 @@ def go_to_board():
 @app.route("/b/<board>/submit", methods=["GET", "POST"])
 def submit(board):
     if request.method == "GET":
-        return redirect("/")
+        return redirect(f"/b/{board}/")
     # get form args name, subject, text
     # only text is going to be actually required to post
     name = request.form.get("name", "").strip()
