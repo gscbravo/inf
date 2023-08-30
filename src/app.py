@@ -135,13 +135,13 @@ def logout():
     session.pop("user", None)
     return redirect("/")
 
-@app.route("/delete")
+@app.route("/delete", methods=["GET", "POST"])
 def delete():
-    if "user" not in session:
+    if "user" not in session or request.method == "GET":
         return redirect("/")
     
-    board = filter_name(request.args.get("board", ""))
-    post = request.args.get("post", "")
+    board = filter_name(request.form.get("board", ""))
+    post = request.form.get("post", "")
 
     if not post:
         if not board:

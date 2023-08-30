@@ -80,9 +80,14 @@ a:hover {
 	color: #ff8000;
 }
 .delete {
+	background: transparent;
+	border: none;
 	color: #ff8000;
+	cursor: pointer;
+	text-decoration: underline;
 }
 .delete:hover {
+	color: #ff0000;
 	font-size: 1.3em;
 }
 .comment-staff {

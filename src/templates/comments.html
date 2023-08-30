@@ -73,7 +73,11 @@
 				{% endfor %}
 			</div>
 			{% if session['user'] %}
-			<p><a href="/delete?board={{ board_name }}&post={{ comment['id'] }}" class="delete">DELETE THIS</a></p>
+			<form action="/delete" method="post">
+				<input type="hidden" name="board" value="{{ board_name }}">
+				<input type="hidden" name="post" value="{{ comment['id'] }}">
+				<input type="submit" class="delete" value="DELETE THIS">
+			</form>
 			{% endif %}
 		</div>
 		{% endfor %}
