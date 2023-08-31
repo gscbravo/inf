@@ -285,11 +285,11 @@ def submit(board):
     # if text is empty, error
     if not text:
         return render_template("error.html", error="Text box must not be empty")
-    
+
     # limit subject length
     if len(subject) > MAX_SUBJECT_LENGTH:
         return render_template("error.html", error=f"Subject must be no more than {MAX_SUBJECT_LENGTH} characters")
-    
+
     # limit name length
     if len(name) > MAX_NAME_LENGTH:
         return render_template("error.html", error=f"Name must be no more than {MAX_NAME_LENGTH} characters")
