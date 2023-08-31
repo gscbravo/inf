@@ -16,7 +16,7 @@
 
 from datetime import datetime, timezone
 from flask import Flask, render_template, redirect, request, session
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 import os
 import configparser
@@ -102,19 +102,51 @@ def filter_name(str):
 def index():
     return redirect(f"/b/{DEFAULT_BOARD}/")
 
+@app.route("/admin")
+def admin():
+    if "user" not in session:
+        return redirect("/")
+
+    return render_template("admin.html")
+
+@app.route("/changepassword", methods=["GET", "POST"])
+def changepassword():
+    if "user" not in session or request.method == "GET":
+        return redirect("/")
+
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+
+    if not password or not confirm:
+        return render_template("error.html", error="Password cannot be empty")
+
+    if password != confirm:
+        return render_template("error.html", error="Passwords must match")
+
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    if not cur.execute('select username from staff where username=?', (session['user'],)).fetchone():
+        return render_template("error.html", error="Username does not exist")
+
+    cur.execute("update staff set password=? where username=?", (generate_password_hash(password), session['user']))
+    conn.commit()
+
+    return render_template("error.html", error="Password successfully changed", type="noerror")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         if "user" in session:
             return redirect("/")
         return render_template("login.html")
-    
+
     username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
 
     if not username or not password:
         return render_template("error.html", error="Username or password cannot be empty")
-    
+
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
@@ -139,7 +171,7 @@ def logout():
 def delete():
     if "user" not in session or request.method == "GET":
         return redirect("/")
-    
+
     board = filter_name(request.form.get("board", ""))
     post = request.form.get("post", "")
 
@@ -147,10 +179,10 @@ def delete():
         if not board:
             return redirect("/")
         return redirect("/b/{board}/")
-    
+
     if not post.isdigit():
         return render_template("error.html", error="Invalid ID")
-    
+
     if board == "sqlite_sequence":
         return render_template("error.html", error="Board does not exist")
 
@@ -214,7 +246,7 @@ def load_board(board):
 @app.route("/go", methods=["GET", "POST"])
 def go_to_board():
     if request.method == "GET":
-        return render_template("error.html", error="Method not allowed")
+        return redirect("/")
 
     # filter board name and make sure it doesn't start with a digit
     allowed_chars = f"{string.digits}{string.ascii_letters}"

@@ -11,7 +11,7 @@
 	<div class="wrapper">
 		{% if session['user'] %}
 		<p>Hello, {{ session['user'] }}</p>
-		<p><a href="/logout">Logout</a></p>
+		<p><a href="/admin">Admin</a> <a href="/logout">Logout</a></p>
 		{% endif %}
 		<h1><a href="/b/{{ board_name }}/">{{ board_name }}</a> - {{ site_name }}</h1>
 		<!-- forum options -->

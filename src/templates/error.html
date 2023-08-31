@@ -4,7 +4,11 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style.css">
+	{% if type %}
+	<title>Message</title>
+	{% else %}
 	<title>Error</title>
+	{% endif %}
 </head>
 <body>
 	<h1>{{ error }}</h1>

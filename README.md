@@ -8,7 +8,7 @@ infinite amount of topics at the discretion of visitors. Boards are created
 upon their URL being visited, with boards being listed upon a comment being
 posted on the board. To conserve storage space, there is a limit on the number
 of comments a board can have, with old comments being removed to make room for
-new comments.
+new comments. No JavaScript is used, so it should run without it enabled.
 
 Currently, no registration is required to comment on the forum. Posts are
 stored in SQLite. Each comment is assigned a comment number to uniquely

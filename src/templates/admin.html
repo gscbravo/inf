@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css">
+	<title>Admin</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>{{ session['user'] }}'s Admin</h1>
+		<p><a href="/logout">Logout</a></p>
+		<h2>Change Password</h2>
+		<form action="/changepassword" method="post">
+			<label for="change-password">New Password:</label>
+			<input type="password" name="password" id="change-password" placeholder="Password" required><br>
+			<label for="confirm-password">Confirm:</label>
+			<input type="password" name="confirm" id="confirm-password" placeholder="Password" required><br>
+			<input type="submit" value="Submit">
+		</form>
+	</div>
+</body>
+</html>
