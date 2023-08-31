@@ -7,7 +7,8 @@ body {
 }
 .wrapper {
 	margin: 0 auto;
-	width: 90%;
+	padding: 10px;
+	max-width: 1650px;
 }
 input[type=submit] {
 	font-size: 1em;
@@ -24,8 +25,8 @@ input[type=text], input[type=password] {
 	background-color: #ffffff;
 }
 input[type=checkbox] {
-	width: 1.4em;
-	height: 1.4em;
+	width: 24px;
+	height: 24px;
 }
 textarea {
 	font-size: 1.1em;
@@ -34,8 +35,8 @@ textarea {
 .comment {
 	background-color: #200136;
 	border-radius: 10px;
-	margin: 8px 0;
-	padding: 8px;
+	margin: 10px 0;
+	padding: 10px;
 }
 .comment-name {
 	font-weight: bold;
@@ -71,7 +72,7 @@ a:hover {
 }
 .comment-text {
 	overflow-wrap: break-word;
-	margin: 8px 0;
+	margin: 10px 0;
 }
 .greentext {
 	color: #00ff00;
