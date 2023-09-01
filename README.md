@@ -82,3 +82,4 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Prompt for admin account creation upon first startup of website
+- [ ] Remove old or false reports
