@@ -80,20 +80,29 @@ a:hover {
 .orangetext {
 	color: #ff8000;
 }
-.delete {
+.delete, .report {
 	background: transparent;
 	border: none;
 	color: #ff8000;
 	cursor: pointer;
 	text-decoration: underline;
 }
-.delete:hover {
+.delete:hover, .report:hover {
 	color: #ff0000;
 	font-size: 1.3em;
+	text-transform: uppercase;
 }
 .comment-staff {
 	font-weight: bold;
 	font-size: 1.2em;
 	color: #00ffff;
 	text-decoration: underline 1px;
+}
+.user-options, .admin-options {
+	padding: 5px 0;
+}
+.reason {
+	margin: 10px 0;
+	font-weight: bold;
+	font-style: italic;
 }

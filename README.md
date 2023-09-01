@@ -28,6 +28,7 @@ technical limitations on behalf of SQLite.
 ### Defaults
 - Maximum number of comments per board: `1000`
 - Maximum subject length: `78`
+- Maximum report reason length: `78`
 - Maximum name length: `50`
 - Maximum comment length: `2000`
 - Default post name: `Guest`
@@ -44,6 +45,7 @@ line is required. Place the config in `src/config.toml`.
 [config]
 max_comments = 1000
 max_subject_length = 78
+max_report_length = 78
 max_name_length = 50
 max_comment_length = 2000
 default_name = Guest
@@ -80,4 +82,3 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Prompt for admin account creation upon first startup of website
-- [ ] Report comments

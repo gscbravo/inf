@@ -44,7 +44,11 @@
 			<span class="comment-info">
 				<span class="comment-subject">{{ comment['subject'] }}</span>
 				{% if comment['staff'] %}
+				{% if session['user'] %}
+				<span class="comment-staff">{{ comment['staff'] }}</span>
+				{% else %}
 				<span class="comment-staff">STAFF</span>
+				{% endif %}
 				{% else %}
 				<span class="comment-name">{{ comment['name'] }}</span>
 				{% endif %}
@@ -72,12 +76,22 @@
 				{% endif %}
 				{% endfor %}
 			</div>
+			<div class="user-options">
+				<form action="/report" method="post">
+					<input type="hidden" name="board" value="{{ board_name }}">
+					<input type="hidden" name="post" value="{{ comment['id'] }}">
+					<input type="text" name="reason" id="report-reason" placeholder="Reason" required>
+					<input type="submit" class="report" value="Report">
+				</form>
+			</div>
 			{% if session['user'] %}
-			<form action="/delete" method="post">
-				<input type="hidden" name="board" value="{{ board_name }}">
-				<input type="hidden" name="post" value="{{ comment['id'] }}">
-				<input type="submit" class="delete" value="DELETE THIS">
-			</form>
+			<div class="admin-options">
+				<form action="/delete" method="post">
+					<input type="hidden" name="board" value="{{ board_name }}">
+					<input type="hidden" name="post" value="{{ comment['id'] }}">
+					<input type="submit" class="delete" value="Delete This">
+				</form>
+			</div>
 			{% endif %}
 		</div>
 		{% endfor %}

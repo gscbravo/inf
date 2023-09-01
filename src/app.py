@@ -35,6 +35,7 @@ if not os.path.isfile("config.toml"):
         parser['config'] = {
             "max_comments": 1000,
             "max_subject_length": 78,
+            "max_report_length": 78,
             "max_name_length": 50,
             "max_comment_length": 2000,
             "default_name": "Guest",
@@ -51,6 +52,8 @@ parser.read_file(open("config.toml"))
 MAX_COMMENTS = int(parser.get("config", "max_comments", fallback=1000))
 # max chars in subject
 MAX_SUBJECT_LENGTH = int(parser.get("config", "max_subject_length", fallback=78))
+# max chars in report reason
+MAX_REPORT_LENGTH = int(parser.get("config", "max_report_length", fallback=78))
 # max chars in name
 MAX_NAME_LENGTH = int(parser.get("config", "max_name_length", fallback=50))
 # max chars in comment
@@ -75,6 +78,11 @@ def staff_init():
         id integer primary key autoincrement,
         username text,
         password text
+    )''')
+    cur.execute(f'''create table if not exists reports (
+        board text,
+        postid text,
+        reason text
     )''')
 staff_init()
 
@@ -107,7 +115,30 @@ def admin():
     if "user" not in session:
         return redirect("/")
 
-    return render_template("admin.html")
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    conn2 = sqlite3.connect("board.db")
+    cur2 = conn2.cursor()
+
+    reports = cur.execute('select * from reports').fetchall()
+    reported_comments = []
+    for report in reports:
+        comment = cur2.execute(f'select * from {report[0]} where id=?', (report[1],)).fetchone()
+        if comment:
+            reported_comments.append({
+                "board": report[0],
+                "id": comment[0],
+                "name": comment[1],
+                "subject": comment[2],
+                "replyto": comment[3],
+                "text": comment[4].split('\n'),
+                "date": comment[5],
+                "staff": comment[6],
+                "reason": report[2]
+            })
+
+    return render_template("admin.html", reports=reported_comments)
 
 @app.route("/changepassword", methods=["GET", "POST"])
 def changepassword():
@@ -117,19 +148,22 @@ def changepassword():
     password = request.form.get("password", "")
     confirm = request.form.get("confirm", "")
 
+    # empty fields
     if not password or not confirm:
         return render_template("error.html", error="Password cannot be empty")
 
+    # typed incorrectly
     if password != confirm:
         return render_template("error.html", error="Passwords must match")
 
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
+    # username not found
     if not cur.execute('select username from staff where username=?', (session['user'],)).fetchone():
         return render_template("error.html", error="Username does not exist")
 
-    cur.execute("update staff set password=? where username=?", (generate_password_hash(password), session['user']))
+    cur.execute('update staff set password=? where username=?', (generate_password_hash(password), session['user']))
     conn.commit()
 
     return render_template("error.html", error="Password successfully changed", type="noerror")
@@ -150,10 +184,12 @@ def login():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
+    # check if username not found
     res = cur.execute('select * from staff where username=?', (username,)).fetchone()
     if not res:
         return render_template("error.html", error="Invalid login")
 
+    # check if password correct
     if not check_password_hash(res[2], password):
         return render_template("error.html", error="Invalid login")
 
@@ -175,6 +211,52 @@ def delete():
     board = filter_name(request.form.get("board", ""))
     post = request.form.get("post", "")
 
+    admin = request.args.get("admin", "")
+
+    # empty fields
+    if not post:
+        if not board:
+            return redirect("/")
+        return redirect("/b/{board}/")
+
+    # post not a number
+    if not post.isdigit():
+        return render_template("error.html", error="Invalid ID")
+
+    # don't delete from sqlite meta table
+    if board == "sqlite_sequence":
+        return render_template("error.html", error="Board does not exist")
+
+    conn = sqlite3.connect("board.db")
+    cur = conn.cursor()
+
+    # board doesnt exist
+    if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
+        return render_template("error.html", error="Board does not exist")
+
+    cur.execute(f'delete from {board} where id=?', (post,))
+    conn.commit()
+
+    if admin:
+        return redirect(f"/admin")
+
+    return redirect(f"/b/{board}/")
+
+@app.route("/report", methods=["GET", "POST"])
+def report():
+    if request.method == "GET":
+        return redirect("/")
+
+    board = filter_name(request.form.get("board", ""))
+    post = request.form.get("post", "")
+    reason = request.form.get("reason", "").strip()
+
+    if not reason:
+        return render_template("error.html", error="Specify a reason")
+
+    if len(reason) > MAX_REPORT_LENGTH:
+        return render_template("error.html", error=f"Reason must be under {MAX_REPORT_LENGTH} characters")
+
     if not post:
         if not board:
             return redirect("/")
@@ -186,13 +268,24 @@ def delete():
     if board == "sqlite_sequence":
         return render_template("error.html", error="Board does not exist")
 
-    conn = sqlite3.connect("board.db")
+    conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
-    if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
+    conn2 = sqlite3.connect("board.db")
+    cur2 = conn2.cursor()
+
+    if not cur2.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
         return render_template("error.html", error="Board does not exist")
 
-    cur.execute(f'delete from {board} where id=?', (post,))
+    # check if post exists
+    if not cur2.execute(f'select id from {board} where id=?', (post,)).fetchall():
+        return render_template("error.html", error="Post does not exist")
+
+    # check if report already sent
+    if cur.execute(f'select * from reports where board=? and postid=?', (board, post)).fetchall():
+        return render_template("error.html", error="Post already reported")
+
+    cur.execute('insert into reports values (?, ?, ?)', (board, post, reason))
     conn.commit()
 
     return redirect(f"/b/{board}/")
@@ -210,7 +303,7 @@ def list_boards():
         results[item[0]] = item_size[0] if item_size is not None else 0
 
         # remove if no posts
-        if results[item[0]] == 0:
+        if results[item[0]] == 0 or results[item[0]] == None:
             results.pop(item[0])
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     return render_template("boards.html", results=results, site_name=SITE_NAME)
