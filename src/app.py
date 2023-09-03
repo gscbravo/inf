@@ -81,7 +81,7 @@ def staff_init():
     )''')
     cur.execute(f'''create table if not exists reports (
         board text,
-        postid text,
+        postid integer,
         reason text
     )''')
 staff_init()
@@ -282,13 +282,35 @@ def report():
         return render_template("error.html", error="Post does not exist")
 
     # check if report already sent
-    if cur.execute(f'select * from reports where board=? and postid=?', (board, post)).fetchall():
-        return render_template("error.html", error="Post already reported")
+    if cur.execute('select * from reports where board=? and postid=?', (board, post)).fetchall():
+        return redirect(f"/b/{board}/")
 
     cur.execute('insert into reports values (?, ?, ?)', (board, post, reason))
     conn.commit()
 
     return redirect(f"/b/{board}/")
+
+@app.route("/unreport", methods=["GET", "POST"])
+def unreport():
+    if "user" not in session or request.method == "GET":
+        return redirect("/")
+
+    board = filter_name(request.form.get("board", ""))
+    post = request.form.get("post", "")
+
+    if not board or not post:
+        return render_template("error.html", error="Board or post must not be empty")
+
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    if not cur.execute('select * from reports where board=? and postid=?', (board, post)).fetchall():
+        return render_template("error.html", error="Post not reported")
+
+    cur.execute('delete from reports where board=? and postid=?', (board, post))
+    conn.commit()
+
+    return redirect("/admin")
 
 @app.route("/boards")
 def list_boards():

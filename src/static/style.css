@@ -80,14 +80,14 @@ a:hover {
 .orangetext {
 	color: #ff8000;
 }
-.delete, .report {
+.delete, .report, .unreport {
 	background: transparent;
 	border: none;
 	color: #ff8000;
 	cursor: pointer;
 	text-decoration: underline;
 }
-.delete:hover, .report:hover {
+.delete:hover, .report:hover, .unreport:hover {
 	color: #ff0000;
 	font-size: 1.3em;
 	text-transform: uppercase;
