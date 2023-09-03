@@ -20,52 +20,9 @@
 		</form>
 		<h2>Reports</h2>
 		{% for report in reports %}
-		<div class="comment" id="p{{ report['id'] }}">
-			<span class="comment-info">
-				<span class="comment-subject">{{ report['subject'] }}</span>
-				{% if report['staff'] %}
-				<span class="comment-staff">{{ report['staff'] }}</span>
-				{% else %}
-				<span class="comment-name">{{ report['name'] }}</span>
-				{% endif %}
-				<span>{{ report['date'] }}</span>
-				<a href="/b/{{ report['board'] }}/#p{{ report['id'] }}" class="comment-id">No. {{ report['id'] }} on {{ report['board'] }}</a>
-			</span><br>
-			<div class="reason">
-				Reason: "{{ report['reason'] }}"
-			</div>
-			{% if report['replyto'] %}
-			<div><a href="#p{{ report['replyto'] }}" class="comment-replyto">@{{ report['replyto'] }}</a></div>
-			{% endif %}
-			<div class="comment-text">
-				{% for line in report['text'] %}
-				{% if line.startswith(">") %}
-				<span class="greentext">{{ line }}</span>
-				{% elif line.startswith("<") %}
-				<span class="orangetext">{{ line }}</span>
-				{% else %}
-				{{ line }}
-				{% endif %}
-				{% if not loop.last %}
-				<br>
-				{% endif %}
-				{% endfor %}
-			</div>
-			{% if session['user'] %}
-			<div class="admin-options">
-				<form action="/unreport" method="post">
-					<input type="hidden" name="board" value="{{ report['board'] }}">
-					<input type="hidden" name="post" value="{{ report['id'] }}">
-					<input type="submit" class="unreport" value="Unreport">
-				</form>
-				<form action="/delete?admin=1" method="post">
-					<input type="hidden" name="board" value="{{ report['board'] }}">
-					<input type="hidden" name="post" value="{{ report['id'] }}">
-					<input type="submit" class="delete" value="Delete This">
-				</form>
-			</div>
-			{% endif %}
-		</div>
+		{% if report['size'] > 0 %}
+		<h3><a href="/reports/{{ report['board'] }}/">{{ report['board'] }} (Total: {{ report['size'] }})</a></h3>
+		{% endif %}
 		{% endfor %}
 	</div>
 </body>

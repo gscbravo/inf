@@ -121,7 +121,35 @@ def admin():
     conn2 = sqlite3.connect("board.db")
     cur2 = conn2.cursor()
 
-    reports = cur.execute('select * from reports').fetchall()
+    res = cur.execute('select distinct board from reports').fetchall()
+    reported_boards = []
+    for board in res:
+        res2 = cur.execute('select * from reports where board=?', (board[0],)).fetchall()
+        available = []
+        for r in res2:
+            potential = cur2.execute(f'select * from {board[0]} where id=?', (r[1],)).fetchone()
+            if potential:
+                available.append(potential)
+
+        reported_boards.append({
+            "board": board[0],
+            "size": len(available)
+        })
+
+    return render_template("admin.html", reports=reported_boards)
+
+@app.route("/reports/<board>/")
+def reports(board):
+    if "user" not in session:
+        return redirect("/")
+
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    conn2 = sqlite3.connect("board.db")
+    cur2 = conn2.cursor()
+
+    reports = cur.execute('select * from reports where board=?', (board,)).fetchall()
     reported_comments = []
     for report in reports:
         comment = cur2.execute(f'select * from {report[0]} where id=?', (report[1],)).fetchone()
@@ -138,7 +166,7 @@ def admin():
                 "reason": report[2]
             })
 
-    return render_template("admin.html", reports=reported_comments)
+    return render_template("reports.html", reports=reported_comments, board=board)
 
 @app.route("/changepassword", methods=["GET", "POST"])
 def changepassword():
@@ -146,7 +174,7 @@ def changepassword():
         return redirect("/")
 
     password = request.form.get("password", "")
-    confirm = request.form.get("confirm", "")
+    confirm = request.form.get("ccur2.execute(f'select * from {board[0]}onfirm", "")
 
     # empty fields
     if not password or not confirm:
@@ -238,7 +266,7 @@ def delete():
     conn.commit()
 
     if admin:
-        return redirect(f"/admin")
+        return redirect(f"/reports/{board}/")
 
     return redirect(f"/b/{board}/")
 
@@ -310,7 +338,7 @@ def unreport():
     cur.execute('delete from reports where board=? and postid=?', (board, post))
     conn.commit()
 
-    return redirect("/admin")
+    return redirect(f"/reports/{board}/")
 
 @app.route("/boards")
 def list_boards():
