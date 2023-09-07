@@ -82,4 +82,5 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Allow the creation of distinct admin and moderator accounts
+- [ ] Announcements
 - [ ] Prompt for admin account creation upon first startup of website
