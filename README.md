@@ -81,4 +81,5 @@ with [Nginx](https://nginx.org/).
 ## TODO
 
 - [ ] Website admin area to configure settings
+- [ ] Allow the creation of distinct admin and moderator accounts
 - [ ] Prompt for admin account creation upon first startup of website
