@@ -18,12 +18,7 @@
 			<input type="password" name="confirm" id="confirm-password" placeholder="Password" required><br>
 			<input type="submit" value="Submit">
 		</form>
-		<h2>Reports</h2>
-		{% for report in reports %}
-		{% if report['size'] > 0 %}
-		<h3><a href="/reports/{{ report['board'] }}/">{{ report['board'] }} (Total: {{ report['size'] }})</a></h3>
-		{% endif %}
-		{% endfor %}
+		<h2><a href="/reports">Reports</a></h2>
 	</div>
 </body>
 </html>

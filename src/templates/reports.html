@@ -8,7 +8,7 @@
 </head>
 <body>
 	<div class="wrapper">
-		<a href="/admin">{{ session['user'] }}'s Admin</a>
+		<a href="/reports">Reports</a>
 		<h1>Reports on {{ board }} (Total: {{ reports | length }})</h1>
 		<h2>Reports</h2>
 		{% for report in reports %}

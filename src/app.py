@@ -115,6 +115,13 @@ def admin():
     if "user" not in session:
         return redirect("/")
 
+    return render_template("admin.html")
+
+@app.route("/reports")
+def list_reports():
+    if "user" not in session:
+        return redirect("/")
+
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
@@ -136,7 +143,7 @@ def admin():
             "size": len(available)
         })
 
-    return render_template("admin.html", reports=reported_boards)
+    return render_template("reportlist.html", reports=reported_boards)
 
 @app.route("/reports/<board>/")
 def reports(board):
