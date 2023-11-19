@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css">
+	<title>Report Post</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Report Post</h1>
+		<form action="/report" method="post">
+			<label for="report-board">Board:</label>
+			<input type="text" id="report-board" name="board" placeholder="Board" value="{{ board }}"><br>
+			<label for="report-post">Post:</label>
+			<input type="text" id="report-post" name="post" placeholder="1" value="{{ post }}"><br>
+			<label for="report-reason">Reason:</label>
+			<input type="text" id="report-reason" name="reason" placeholder="Reason"><br>
+			<input type="submit" value="Report">
+		</form>
+	</div>
+</body>
+</html>

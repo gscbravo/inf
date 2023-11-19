@@ -280,7 +280,9 @@ def delete():
 @app.route("/report", methods=["GET", "POST"])
 def report():
     if request.method == "GET":
-        return redirect("/")
+        board = request.args.get("board", "")
+        post = request.args.get("post", "")
+        return render_template("reportpost.html", board=board, post=post)
 
     board = filter_name(request.form.get("board", ""))
     post = request.form.get("post", "")

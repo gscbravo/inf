@@ -77,12 +77,7 @@
 				{% endfor %}
 			</div>
 			<div class="user-options">
-				<form action="/report" method="post">
-					<input type="hidden" name="board" value="{{ board_name }}">
-					<input type="hidden" name="post" value="{{ comment['id'] }}">
-					<input type="text" name="reason" id="report-reason" placeholder="Reason" required>
-					<input type="submit" class="report" value="Report">
-				</form>
+				<a href="/report?board={{ board_name }}&post={{ comment['id'] }}" class="report">Report</a>
 			</div>
 			{% if session['user'] %}
 			<div class="admin-options">

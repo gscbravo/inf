@@ -81,6 +81,7 @@ a:hover {
 	color: #ff8000;
 }
 .delete, .report, .unreport {
+	padding: 0;
 	background: transparent;
 	border: none;
 	color: #ff8000;
