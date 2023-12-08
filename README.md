@@ -85,3 +85,4 @@ with [Nginx](https://nginx.org/).
 - [ ] Announcements
 - [ ] Staff only board
 - [ ] Prompt for admin account creation upon first startup of website
+- [ ] IP address blocking
