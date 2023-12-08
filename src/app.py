@@ -181,7 +181,7 @@ def changepassword():
         return redirect("/")
 
     password = request.form.get("password", "")
-    confirm = request.form.get("ccur2.execute(f'select * from {board[0]}onfirm", "")
+    confirm = request.form.get("confirm", "")
 
     # empty fields
     if not password or not confirm:
