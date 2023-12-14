@@ -10,6 +10,11 @@
 	<div class="wrapper">
 		<h1>{{ session['user'] }}'s Admin</h1>
 		<p><a href="/logout">Logout</a></p>
+		<h2>Announcement</h2>
+		<form action="/announce" method="post">
+			<textarea name="announce" id="" cols="35" rows="10" placeholder="Announcement">{{ announce }}</textarea><br>
+			<input type="submit" value="Announce">
+		</form>
 		<h2>Change Password</h2>
 		<form action="/changepassword" method="post">
 			<label for="change-password">New Password:</label>

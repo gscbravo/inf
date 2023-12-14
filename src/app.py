@@ -84,6 +84,10 @@ def staff_init():
         postid integer,
         reason text
     )''')
+    cur.execute(f'''create table if not exists meta (
+        field text,
+        message text
+    )''')
 staff_init()
 
 # initialize database if doesn't exist
@@ -115,7 +119,34 @@ def admin():
     if "user" not in session:
         return redirect("/")
 
-    return render_template("admin.html")
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    announceres = cur.execute('select * from meta where field="announce"').fetchone()
+    if announceres:
+        announce = announceres[1]
+    else:
+        announce = ""
+
+    return render_template("admin.html", announce=announce)
+
+@app.route("/announce", methods=["GET", "POST"])
+def announce():
+    if "user" not in session or request.method == "GET":
+        return redirect("/")
+
+    announce = request.form.get("announce", "").strip()
+
+    conn = sqlite3.connect("staff.db")
+    cur = conn.cursor()
+
+    if cur.execute('select * from meta where field="announce"').fetchone():
+        cur.execute('update meta set message=? where field="announce"', (announce,))
+    else:
+        cur.execute('insert into meta values ("announce", ?)', (announce,))
+    conn.commit()
+
+    return redirect("/admin")
 
 @app.route("/reports")
 def list_reports():
@@ -376,8 +407,17 @@ def load_board(board):
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
 
+    staffconn = sqlite3.connect("staff.db")
+    staffcur = staffconn.cursor()
+
+    announceres = staffcur.execute('select * from meta where field="announce"').fetchone()
+    if announceres:
+        announce = announceres[1]
+    else:
+        announce = ""
+
     if not cur.execute(f'select name from sqlite_master where type="table" and name="{req_board}"').fetchall():
-        return render_template("comments.html", replyto=replyto, board_name=req_board, comments=[], default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+        return render_template("comments.html", replyto=replyto, board_name=req_board, comments=[], default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION, announce=announce.split("\n"))
 
     res = cur.execute(f'select * from {req_board}').fetchall()
     board_comments = []
@@ -393,7 +433,7 @@ def load_board(board):
             "staff": comment[6]
         })
 
-    return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION)
+    return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION, announce=announce.split("\n"))
 
 @app.route("/go", methods=["GET", "POST"])
 def go_to_board():

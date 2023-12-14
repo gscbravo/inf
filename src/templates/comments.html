@@ -20,6 +20,15 @@
 			<input type="text" name="board" id="go-board" placeholder="board" required>
 			<input type="submit" id="go-submit" value="Go">
 		</form>
+		<!-- announcements -->
+		{% if announce != [""] %}
+		<div class="announce">
+			<h2>Announcements</h2>
+			{% for line in announce %}
+			<p>{{ line }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
 		<!-- comment form -->
 		<h2>Submit Comment</h2>
 		<form action="submit" method="post" id="comment-form">
