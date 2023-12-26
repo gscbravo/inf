@@ -90,11 +90,16 @@ def staff_init():
     )''')
 staff_init()
 
+# turn input to proper board name
+def filter_name(str):
+    allowed_chars = f"{string.digits}{string.ascii_letters}"
+    return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
+
 # initialize database if doesn't exist
 def db_init(board_name):
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
-    cur.execute(f'''create table if not exists {board_name} (
+    cur.execute(f'''create table if not exists {filter_name(board_name)} (
         id integer primary key autoincrement,
         name text,
         subject text,
@@ -104,11 +109,6 @@ def db_init(board_name):
         staff text
     )''')
     conn.commit()
-
-# turn input to proper board name
-def filter_name(str):
-    allowed_chars = f"{string.digits}{string.ascii_letters}"
-    return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
 @app.route("/")
 def index():
