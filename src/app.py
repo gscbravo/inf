@@ -95,21 +95,6 @@ def filter_name(str):
     allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
-# initialize database if doesn't exist
-def db_init(board_name):
-    conn = sqlite3.connect("board.db")
-    cur = conn.cursor()
-    cur.execute(f'''create table if not exists {filter_name(board_name)} (
-        id integer primary key autoincrement,
-        name text,
-        subject text,
-        replyto text,
-        text text,
-        date text,
-        staff text
-    )''')
-    conn.commit()
-
 @app.route("/")
 def index():
     return redirect(f"/b/{DEFAULT_BOARD}/")
@@ -504,9 +489,20 @@ def submit(board):
         staff
     )
 
-    db_init(req_board)
     conn = sqlite3.connect("board.db")
     cur = conn.cursor()
+
+    # initialize db
+    cur.execute(f'''create table if not exists {req_board} (
+        id integer primary key autoincrement,
+        name text,
+        subject text,
+        replyto text,
+        text text,
+        date text,
+        staff text
+    )''')
+    conn.commit()
 
     # drop oldest post if at limit
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
