@@ -74,17 +74,17 @@ app.jinja_env.lstrip_blocks = True
 def staff_init():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
-    cur.execute(f'''create table if not exists staff (
+    cur.execute('''create table if not exists staff (
         id integer primary key autoincrement,
         username text,
         password text
     )''')
-    cur.execute(f'''create table if not exists reports (
+    cur.execute('''create table if not exists reports (
         board text,
         postid integer,
         reason text
     )''')
-    cur.execute(f'''create table if not exists meta (
+    cur.execute('''create table if not exists meta (
         field text,
         message text
     )''')
