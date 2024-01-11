@@ -25,6 +25,8 @@ by starting a line with the "<" character. Boards can use the letters of the
 alphabet, as well as numbers, however, they cannot start with a number due to
 technical limitations on behalf of SQLite.
 
+[Font Awesome](https://fontawesome.com/) Free is used to provide icons.
+
 ### Defaults
 - Maximum number of comments per board: `1000`
 - Maximum subject length: `78`
@@ -78,8 +80,6 @@ by using `delete`.
 
 When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/)
 with [Nginx](https://nginx.org/).
-
-[Font Awesome](https://fontawesome.com/) Free is used to provide icons.
 
 ## TODO
 
