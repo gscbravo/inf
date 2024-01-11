@@ -4,10 +4,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style.css">
+	<link rel="stylesheet" href="/static/fontawesome/css/fontawesome.css">
+	<link rel="stylesheet" href="/static/fontawesome/css/solid.css">
 	<title>Admin</title>
 </head>
 <body>
 	<div class="wrapper">
+		<a href="/">Back</a>
 		<h1>{{ session['user'] }}'s Admin</h1>
 		<p><a href="/logout">Logout</a></p>
 		<h2>Announcement</h2>
@@ -24,6 +27,26 @@
 			<input type="submit" value="Submit">
 		</form>
 		<h2><a href="/reports">Reports</a></h2>
+
+		{% if staff %}
+		<h2>Staff List</h2>
+		<table>
+			<tr>
+				<th>Username</th>
+				<th>Auth</th>
+			</tr>
+			{% for row in staff %}
+			<tr>
+				<td>{{ row[0] }}</td>
+				{% if row[1] == 0 %}
+				<td><i class="fa-solid fa-chess-king"></i> Admin</td>
+				{% elif row[1] == 1 %}
+				<td><i class="fa-solid fa-shield-halved"></i> Mod</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
 	</div>
 </body>
 </html>

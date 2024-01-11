@@ -13,7 +13,8 @@ cur = conn.cursor()
 cur.execute(f"""create table if not exists staff (
     id integer primary key autoincrement,
     username text,
-    password text
+    password text,
+    type integer
 )""")
 conn.commit()
 
@@ -34,7 +35,7 @@ if sys.argv[1] == "add":
         print("Username or password cannot be empty")
         sys.exit(1)
 
-    cur.execute("insert into staff values (NULL, ?, ?)", (username, generate_password_hash(password)))
+    cur.execute("insert into staff values (NULL, ?, ?, 1)", (username, generate_password_hash(password)))
     conn.commit()
 elif sys.argv[1] == "change":
     username = input("Username: ").strip().lower()

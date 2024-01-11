@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="{{ board_name }} - {{ site_name }}, {{ site_description }}">
 	<link rel="stylesheet" href="/static/style.css">
+	<link rel="stylesheet" href="/static/fontawesome/css/fontawesome.css">
+	<link rel="stylesheet" href="/static/fontawesome/css/solid.css">
 	<title>{{ board_name }} - {{ site_name }}</title>
 </head>
 <body>
@@ -54,9 +56,9 @@
 				<span class="comment-subject">{{ comment['subject'] }}</span>
 				{% if comment['staff'] %}
 				{% if session['user'] %}
-				<span class="comment-staff">{{ comment['staff'] }}</span>
+				<span class="comment-staff">{{ comment['staff'] }} <i class="fa-solid fa-certificate"></i></span>
 				{% else %}
-				<span class="comment-staff">STAFF</span>
+				<span class="comment-staff">STAFF <i class="fa-solid fa-certificate"></i></span>
 				{% endif %}
 				{% else %}
 				<span class="comment-name">{{ comment['name'] }}</span>
@@ -86,14 +88,14 @@
 				{% endfor %}
 			</div>
 			<div class="user-options">
-				<a href="/report?board={{ board_name }}&post={{ comment['id'] }}" class="report">Report</a>
+				<a href="/report?board={{ board_name }}&post={{ comment['id'] }}" class="report"><i class="fa-solid fa-flag"></i> Report</a>
 			</div>
 			{% if session['user'] %}
 			<div class="admin-options">
 				<form action="/delete" method="post">
 					<input type="hidden" name="board" value="{{ board_name }}">
 					<input type="hidden" name="post" value="{{ comment['id'] }}">
-					<input type="submit" class="delete" value="Delete This">
+					<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
 				</form>
 			</div>
 			{% endif %}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css">
+	<title>Setup</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Register Admin</h1>
+		<form action="/registeradmin" method="post">
+			<label for="username">Username:</label>
+			<input type="text" name="username" id="username" placeholder="Username" required><br>
+			<label for="password">Password:</label>
+			<input type="password" name="password" id="password" placeholder="Password" required><br>
+			<label for="password">Confirm Password:</label>
+			<input type="password" name="confirm" id="confirm" placeholder="Password" required><br>
+			<input type="submit" value="Register">
+		</form>
+	</div>
+</body>
+</html>

@@ -77,7 +77,8 @@ def staff_init():
     cur.execute('''create table if not exists staff (
         id integer primary key autoincrement,
         username text,
-        password text
+        password text,
+        type integer
     )''')
     cur.execute('''create table if not exists reports (
         board text,
@@ -113,7 +114,12 @@ def admin():
     else:
         announce = ""
 
-    return render_template("admin.html", announce=announce)
+    stafflist = ()
+    authlevel = cur.execute('select type from staff where username=?', (session['user'],)).fetchone()[0]
+    if authlevel == 0:
+        stafflist = cur.execute('select username, type from staff').fetchall()
+
+    return render_template("admin.html", announce=announce, staff=stafflist)
 
 @app.route("/announce", methods=["GET", "POST"])
 def announce():
@@ -224,6 +230,12 @@ def login():
     if request.method == "GET":
         if "user" in session:
             return redirect("/")
+
+        with sqlite3.connect("staff.db") as conn:
+            cur = conn.cursor()
+            if len(cur.execute('select * from staff where type=0').fetchall()) == 0:
+                return render_template("setup.html")
+
         return render_template("login.html")
 
     username = request.form.get("username", "").strip().lower()
@@ -253,6 +265,36 @@ def logout():
     # remove user session
     session.pop("user", None)
     return redirect("/")
+
+@app.route("/registeradmin", methods=["GET", "POST"])
+def registeradmin():
+    if request.method == "GET":
+        return redirect("/")
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        if len(cur.execute('select * from staff where type=0').fetchall()) != 0:
+            return redirect("/")
+
+    username = request.form.get("username", "").strip().lower()
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+
+    if not username or not password or not confirm:
+        return render_template("error.html", error="Fields cannot be empty")
+
+    if password != confirm:
+        return render_template("error.html", error="Passwords do not match")
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        if cur.execute("select username from staff where username=?", (username,)).fetchone():
+            return render_template("error.html", error="Username taken")
+
+        cur.execute("insert into staff values (NULL, ?, ?, 0)", (username, generate_password_hash(password)))
+        conn.commit()
+
+    return redirect("/login")
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete():

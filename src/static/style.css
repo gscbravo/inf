@@ -87,6 +87,7 @@ a:hover {
 	color: #ff8000;
 	cursor: pointer;
 	text-decoration: underline;
+	font-size: 1.1em;
 }
 .delete:hover, .report:hover, .unreport:hover {
 	color: #ff0000;

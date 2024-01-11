@@ -64,9 +64,10 @@ cd src
 flask run
 ```
 
-Then you can create an admin account using `src/admin.py`. You can use
+Then you can create an admin account by going to `/login`. You can use
 this to delete comments. Be sure to change app.config['SECRET_KEY'] in
-`src/app.py` to something more secure. You can login at `/login`.
+`src/app.py` to something more secure. You can login at `/login`. You
+can create moderator accounts with `src/admin.py`.
 
 ```
 python3 admin.py add
@@ -78,10 +79,12 @@ by using `delete`.
 When in production, use a WSGI server such as [Gunicorn](https://gunicorn.org/)
 with [Nginx](https://nginx.org/).
 
+[Font Awesome](https://fontawesome.com/) Free is used to provide icons.
+
 ## TODO
 
 - [ ] Website admin area to configure settings
-- [ ] Allow the creation of distinct admin and moderator accounts
+- [ ] Allow admin to create unique links for creating mods
+- [ ] Allow admin to delete accounts
 - [ ] Staff only board
-- [ ] Prompt for admin account creation upon first startup of website
 - [ ] IP address blocking
