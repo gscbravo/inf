@@ -184,11 +184,22 @@ def register():
 
             return render_template("register.html", token=token)
 
-    token = request.form.get("token", "")
-    with sqlite3.connect("staff.db") as conn:
-        cur = conn.cursor()
-        if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
-            return redirect("/")
+    type = request.form.get("type", "")
+
+    if type != "1" and type != "0":
+        return redirect("/")
+
+    if type == "1":
+        token = request.form.get("token", "")
+        with sqlite3.connect("staff.db") as conn:
+            cur = conn.cursor()
+            if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
+                return redirect("/")
+    elif type == "0":
+        with sqlite3.connect("staff.db") as conn:
+            cur = conn.cursor()
+            if len(cur.execute('select * from staff where type=0').fetchall()) != 0:
+                return redirect("/")
 
     username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
@@ -209,12 +220,14 @@ def register():
         if cur.execute('select username from staff where username=?', (username,)).fetchone():
             return render_template("error.html", error="Username taken")
 
-        cur.execute('insert into staff values (NULL, ?, ?, 1)', (username, generate_password_hash(password)))
-        cur.execute('delete from tokens where token=?', (token,))
+        if type == "1":
+            cur.execute('insert into staff values (NULL, ?, ?, 1)', (username, generate_password_hash(password)))
+            cur.execute('delete from tokens where token=?', (token,))
+            if "user" in session:
+                return redirect("/admin")
+        elif type == "0":
+            cur.execute('insert into staff values (NULL, ?, ?, 0)', (username, generate_password_hash(password)))
         conn.commit()
-
-    if "user" in session:
-        return redirect("/admin")
 
     return render_template("error.html", error=f"Successfully registered {username}", type="register")
 
@@ -363,40 +376,6 @@ def logout():
     # remove user session
     session.pop("user", None)
     return redirect("/")
-
-@app.route("/registeradmin", methods=["GET", "POST"])
-def registeradmin():
-    if request.method == "GET":
-        return redirect("/")
-
-    with sqlite3.connect("staff.db") as conn:
-        cur = conn.cursor()
-        if len(cur.execute('select * from staff where type=0').fetchall()) != 0:
-            return redirect("/")
-
-    username = request.form.get("username", "").strip().lower()
-    password = request.form.get("password", "")
-    confirm = request.form.get("confirm", "")
-
-    if not username or not password or not confirm:
-        return render_template("error.html", error="Fields cannot be empty")
-
-    if password != confirm:
-        return render_template("error.html", error="Passwords do not match")
-
-    if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}"):
-        return render_template("error.html", error="Username can only use letters and digits")
-    username = filter_username(username)
-
-    with sqlite3.connect("staff.db") as conn:
-        cur = conn.cursor()
-        if cur.execute('select username from staff where username=?', (username,)).fetchone():
-            return render_template("error.html", error="Username taken")
-
-        cur.execute('insert into staff values (NULL, ?, ?, 0)', (username, generate_password_hash(password)))
-        conn.commit()
-
-    return render_template("error.html", error=f"Successfully registered {username}", type="register")
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete():
