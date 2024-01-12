@@ -28,6 +28,39 @@
 		</form>
 		<h2><a href="/reports">Reports</a></h2>
 
+		{% if admin %}
+		<h2>Create Moderator</h2>
+		{% if tokens %}
+		<table>
+			<tr>
+				<th>Token</th>
+				<th>Link</th>
+				<th>Delete</th>
+			</tr>
+			{% for row in tokens %}
+			<tr>
+				<td>
+					<details>
+						<summary>Show Token</summary>
+						{{ row[0] }}
+					</details>
+				</td>
+				<td><a href="/register?token={{ row[0] }}">Register</a></td>
+				<td>
+					<form action="/deltoken" method="post">
+						<input type="hidden" name="token" value="{{ row[0] }}">
+						<input type="submit" value="Delete">
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
+		<form action="/gentoken" method="post">
+			<input type="submit" value="Generate Token">
+		</form>
+		{% endif %}
+
 		{% if staff %}
 		<h2>Staff List</h2>
 		<table>

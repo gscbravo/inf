@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from datetime import datetime, timezone
+from uuid import uuid4
 from flask import Flask, render_template, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
@@ -89,12 +90,21 @@ def staff_init():
         field text,
         message text
     )''')
+    cur.execute('''create table if not exists tokens (
+        token text
+    )''')
 staff_init()
 
 # turn input to proper board name
 def filter_name(str):
     allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
+
+def is_admin(username):
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        authlevel = cur.execute('select type from staff where username=?', (username,)).fetchone()[0]
+    return authlevel == 0
 
 @app.route("/")
 def index():
@@ -115,11 +125,90 @@ def admin():
         announce = ""
 
     stafflist = ()
-    authlevel = cur.execute('select type from staff where username=?', (session['user'],)).fetchone()[0]
-    if authlevel == 0:
-        stafflist = cur.execute('select username, type from staff').fetchall()
+    tokenlist = ()
 
-    return render_template("admin.html", announce=announce, staff=stafflist)
+    adminstatus = False
+    if is_admin(session['user']):
+        stafflist = cur.execute('select username, type from staff').fetchall()
+        tokenlist = cur.execute('select token from tokens').fetchall()
+        adminstatus = True
+
+    return render_template("admin.html", announce=announce, staff=stafflist, tokens=tokenlist, admin=adminstatus)
+
+@app.route("/gentoken", methods=["GET", "POST"])
+def gentoken():
+    if "user" not in session or request.method == "GET" or not is_admin(session['user']):
+        return redirect("/")
+
+    token = uuid4().hex
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+
+        while len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) > 0:
+            token = uuid4().hex
+
+        cur.execute('insert into tokens values(?)', (token,))
+        conn.commit()
+
+    return redirect("/admin")
+
+@app.route("/deltoken", methods=["GET", "POST"])
+def deltoken():
+    if "user" not in session or request.method == "GET" or not is_admin(session['user']):
+        return redirect("/")
+
+    token = request.form.get("token", "")
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        cur.execute('delete from tokens where token=?', (token,))
+        conn.commit()
+
+    return redirect("/admin")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "GET":
+        token = request.args.get("token", "")
+        with sqlite3.connect("staff.db") as conn:
+            cur = conn.cursor()
+
+            if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
+                return redirect("/")
+
+            return render_template("register.html", token=token)
+
+    token = request.form.get("token", "")
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
+            return redirect("/")
+
+    username = request.form.get("username", "").strip().lower()
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+
+    if not username or not password or not confirm:
+        return render_template("error.html", error="Fields cannot be empty")
+
+    if password != confirm:
+        return render_template("error.html", error="Passwords do not match")
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+        if cur.execute('select username from staff where username=?', (username,)).fetchone():
+            return render_template("error.html", error="Username taken")
+
+        cur.execute('insert into staff values (NULL, ?, ?, 1)', (username, generate_password_hash(password)))
+        cur.execute('delete from tokens where token=?', (token,))
+        conn.commit()
+
+    if "user" in session:
+        return redirect("/admin")
+
+    return redirect("/login")
+
 
 @app.route("/announce", methods=["GET", "POST"])
 def announce():
@@ -288,10 +377,10 @@ def registeradmin():
 
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
-        if cur.execute("select username from staff where username=?", (username,)).fetchone():
+        if cur.execute('select username from staff where username=?', (username,)).fetchone():
             return render_template("error.html", error="Username taken")
 
-        cur.execute("insert into staff values (NULL, ?, ?, 0)", (username, generate_password_hash(password)))
+        cur.execute('insert into staff values (NULL, ?, ?, 0)', (username, generate_password_hash(password)))
         conn.commit()
 
     return redirect("/login")
