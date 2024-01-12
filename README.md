@@ -86,5 +86,6 @@ with [Nginx](https://nginx.org/).
 
 - [ ] Website admin area to configure settings
 - [ ] Allow admin to delete accounts
+- [ ] Allow admin to promote moderators to admin
 - [ ] Staff only board
 - [ ] IP address blocking
