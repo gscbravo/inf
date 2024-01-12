@@ -231,7 +231,6 @@ def register():
 
     return render_template("error.html", error=f"Successfully registered {username}", type="register")
 
-
 @app.route("/announce", methods=["GET", "POST"])
 def announce():
     if "user" not in session or request.method == "GET":
