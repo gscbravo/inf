@@ -100,6 +100,11 @@ def filter_name(str):
     allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
+# filter usernames
+def filter_username(str):
+    allowed_chars = f"{string.digits}{string.ascii_letters}"
+    return "".join(c for c in str if c in allowed_chars)
+
 def is_admin(username):
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
@@ -195,6 +200,10 @@ def register():
     if password != confirm:
         return render_template("error.html", error="Passwords do not match")
 
+    if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}"):
+        return render_template("error.html", error="Username can only use letters and digits")
+    username = filter_username(username)
+
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
         if cur.execute('select username from staff where username=?', (username,)).fetchone():
@@ -207,7 +216,7 @@ def register():
     if "user" in session:
         return redirect("/admin")
 
-    return redirect("/login")
+    return render_template("error.html", error=f"Successfully registered {username}", type="register")
 
 
 @app.route("/announce", methods=["GET", "POST"])
@@ -327,7 +336,7 @@ def login():
 
         return render_template("login.html")
 
-    username = request.form.get("username", "").strip().lower()
+    username = filter_username(request.form.get("username", "").strip().lower())
     password = request.form.get("password", "")
 
     if not username or not password:
@@ -375,6 +384,10 @@ def registeradmin():
     if password != confirm:
         return render_template("error.html", error="Passwords do not match")
 
+    if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}"):
+        return render_template("error.html", error="Username can only use letters and digits")
+    username = filter_username(username)
+
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
         if cur.execute('select username from staff where username=?', (username,)).fetchone():
@@ -383,7 +396,7 @@ def registeradmin():
         cur.execute('insert into staff values (NULL, ?, ?, 0)', (username, generate_password_hash(password)))
         conn.commit()
 
-    return redirect("/login")
+    return render_template("error.html", error=f"Successfully registered {username}", type="register")
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete():

@@ -11,6 +11,10 @@
 	{% endif %}
 </head>
 <body>
+	{% if type and type == "register" %}
+	<h1>{{ error }} - <a href="/login">Login</a></h1>
+	{% else %}
 	<h1>{{ error }}</h1>
+	{% endif %}
 </body>
 </html>
