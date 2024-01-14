@@ -111,6 +111,15 @@ def is_admin(username):
         authlevel = cur.execute('select type from staff where username=?', (username,)).fetchone()[0]
     return authlevel == 0
 
+@app.before_request
+def before_request():
+    if "user" in session:
+        with sqlite3.connect("staff.db") as conn:
+            cur = conn.cursor()
+            if not cur.execute('select username from staff where username=?', (session['user'],)).fetchone():
+                session.pop("user", None)
+                return redirect("/")
+
 @app.route("/")
 def index():
     return redirect(f"/b/{DEFAULT_BOARD}/")
@@ -169,6 +178,31 @@ def deltoken():
         cur = conn.cursor()
         cur.execute('delete from tokens where token=?', (token,))
         conn.commit()
+
+    return redirect("/admin")
+
+@app.route("/delacct", methods=["GET", "POST"])
+def delacct():
+    if "user" not in session or request.method == "GET" or not is_admin(session['user']):
+        return redirect("/")
+
+    username = request.form.get("username", "")
+
+    if not username:
+        return render_template("error.html", error="Username cannot be empty")
+
+    with sqlite3.connect("staff.db") as conn:
+        cur = conn.cursor()
+
+        res = cur.execute("select username from staff where username=?", (username,)).fetchone()
+        if not res:
+            return render_template("error.html", error="Username doesn't exist")
+
+        cur.execute("delete from staff where username=?", (username,))
+        conn.commit()
+
+        if session['user'] == res[0]:
+            return redirect("/logout")
 
     return redirect("/admin")
 
