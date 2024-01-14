@@ -85,7 +85,6 @@ with [Nginx](https://nginx.org/).
 ## TODO
 
 - [ ] Website admin area to configure settings
-- [ ] Allow admin to delete accounts
 - [ ] Allow admin to promote moderators to admin
 - [ ] Blocked word list
 - [ ] Staff only board

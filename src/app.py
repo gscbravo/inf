@@ -105,6 +105,7 @@ def filter_username(str):
     allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars)
 
+# check if user has type 0 aka admin status
 def is_admin(username):
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
@@ -116,6 +117,7 @@ def before_request():
     if "user" in session:
         with sqlite3.connect("staff.db") as conn:
             cur = conn.cursor()
+            # if session user is not in db then logout
             if not cur.execute('select username from staff where username=?', (session['user'],)).fetchone():
                 session.pop("user", None)
                 return redirect("/")
@@ -132,6 +134,7 @@ def admin():
     conn = sqlite3.connect("staff.db")
     cur = conn.cursor()
 
+    # get accouncement
     announceres = cur.execute('select * from meta where field="announce"').fetchone()
     if announceres:
         announce = announceres[1]
@@ -141,6 +144,7 @@ def admin():
     stafflist = ()
     tokenlist = ()
 
+    # get list of staff and tokens
     adminstatus = False
     if is_admin(session['user']):
         stafflist = cur.execute('select username, type from staff').fetchall()
@@ -154,11 +158,13 @@ def gentoken():
     if "user" not in session or request.method == "GET" or not is_admin(session['user']):
         return redirect("/")
 
+    # uuid4 token
     token = uuid4().hex
 
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
 
+        # if code somehow manages to generate an identical token, generate until it doesnt
         while len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) > 0:
             token = uuid4().hex
 
@@ -174,6 +180,7 @@ def deltoken():
 
     token = request.form.get("token", "")
 
+    # delete requested token
     with sqlite3.connect("staff.db") as conn:
         cur = conn.cursor()
         cur.execute('delete from tokens where token=?', (token,))
@@ -198,6 +205,7 @@ def delacct():
         if not res:
             return render_template("error.html", error="Username doesn't exist")
 
+        # delete user
         cur.execute("delete from staff where username=?", (username,))
         conn.commit()
 
@@ -213,6 +221,7 @@ def register():
         with sqlite3.connect("staff.db") as conn:
             cur = conn.cursor()
 
+            # if token is not valid then dont show register page
             if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
                 return redirect("/")
 
@@ -220,16 +229,19 @@ def register():
 
     type = request.form.get("type", "")
 
+    # if type isnt either 0 admin or 1 mod escape
     if type != "1" and type != "0":
         return redirect("/")
 
     if type == "1":
+        # if trying to register a mod then check to make sure token is valid
         token = request.form.get("token", "")
         with sqlite3.connect("staff.db") as conn:
             cur = conn.cursor()
             if len(cur.execute('select * from tokens where token=?', (token,)).fetchall()) == 0:
                 return redirect("/")
     elif type == "0":
+        # if trying to register an admin there must not already be one
         with sqlite3.connect("staff.db") as conn:
             cur = conn.cursor()
             if len(cur.execute('select * from staff where type=0').fetchall()) != 0:
@@ -245,6 +257,7 @@ def register():
     if password != confirm:
         return render_template("error.html", error="Passwords do not match")
 
+    # make sure usernames use only letters and numbers
     if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}"):
         return render_template("error.html", error="Username can only use letters and digits")
     username = filter_username(username)
@@ -255,8 +268,10 @@ def register():
             return render_template("error.html", error="Username taken")
 
         if type == "1":
+            # create user and delete token
             cur.execute('insert into staff values (NULL, ?, ?, 1)', (username, generate_password_hash(password)))
             cur.execute('delete from tokens where token=?', (token,))
+            # redirect if admin is creating user
             if "user" in session:
                 return redirect("/admin")
         elif type == "0":
