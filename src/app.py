@@ -348,7 +348,7 @@ def login():
 
         return render_template("login.html")
 
-    username = filter_username(request.form.get("username", "").strip().lower())
+    username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
 
     if not username or not password:
