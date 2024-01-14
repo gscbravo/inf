@@ -366,7 +366,7 @@ def login():
     if not check_password_hash(res[2], password):
         return render_template("error.html", error="Invalid login")
 
-    session['user'] = username
+    session['user'] = res[1]
 
     return redirect("/")
 
