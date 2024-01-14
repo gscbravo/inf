@@ -529,6 +529,12 @@ def load_board(board):
     res = cur.execute(f'select * from {req_board}').fetchall()
     board_comments = []
     for index, comment in enumerate(res):
+        commentauth = -1
+        if comment[6]:
+            commentauthres = staffcur.execute('select type from staff where username=?', (comment[6],)).fetchone()
+            if commentauthres is not None:
+                commentauth = commentauthres[0]
+
         board_comments.insert(0, {
             "id": comment[0],
             "name": comment[1],
@@ -537,7 +543,8 @@ def load_board(board):
             "text": comment[4].split('\n'),
             "date": comment[5],
             "replies": [item[0] for item in cur.execute(f'select id from {req_board} where replyto=? and id>=?', (comment[0], comment[0]))],
-            "staff": comment[6]
+            "staff": comment[6],
+            "type": commentauth
         })
 
     return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION, announce=announce.split("\n"))

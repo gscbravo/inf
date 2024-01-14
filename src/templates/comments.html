@@ -55,11 +55,18 @@
 			<span class="comment-info">
 				<span class="comment-subject">{{ comment['subject'] }}</span>
 				{% if comment['staff'] %}
-				{% if session['user'] %}
-				<span class="comment-staff">{{ comment['staff'] }} <i class="fa-solid fa-certificate"></i></span>
-				{% else %}
-				<span class="comment-staff">STAFF <i class="fa-solid fa-certificate"></i></span>
-				{% endif %}
+				<span class="comment-staff">
+					{% if comment['type'] == 0 %}
+					<i class="fa-solid fa-chess-king"></i>
+					{% elif comment['type'] == 1 %}
+					<i class="fa-solid fa-shield-halved"></i>
+					{% endif %}
+					{% if session['user'] %}
+					{{ comment['staff'] }}
+					{% else %}
+					STAFF
+					{% endif %}
+				</span>
 				{% else %}
 				<span class="comment-name">{{ comment['name'] }}</span>
 				{% endif %}
