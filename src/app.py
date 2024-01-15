@@ -102,7 +102,7 @@ def filter_name(str):
 
 # filter usernames
 def filter_username(str):
-    allowed_chars = f"{string.digits}{string.ascii_letters}"
+    allowed_chars = f"{string.digits}{string.ascii_letters}_"
     return "".join(c for c in str if c in allowed_chars)
 
 # check if user has type 0 aka admin status
@@ -258,8 +258,8 @@ def register():
         return render_template("error.html", error="Passwords do not match")
 
     # make sure usernames use only letters and numbers
-    if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}"):
-        return render_template("error.html", error="Username can only use letters and digits")
+    if not set(username) <= frozenset(f"{string.digits}{string.ascii_letters}_"):
+        return render_template("error.html", error="Username can only use letters, digits, and underscores")
     username = filter_username(username)
 
     with sqlite3.connect("staff.db") as conn:
