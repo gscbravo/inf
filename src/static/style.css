@@ -80,7 +80,7 @@ a:hover {
 .orangetext {
 	color: #ff8000;
 }
-.delete, .report, .unreport {
+.delete, .report, .unreport, .identify {
 	padding: 0;
 	background: transparent;
 	border: none;
@@ -89,7 +89,7 @@ a:hover {
 	text-decoration: underline;
 	font-size: 1.1em;
 }
-.delete:hover, .report:hover, .unreport:hover {
+.delete:hover, .report:hover, .unreport:hover, .identify:hover {
 	color: #ff0000;
 	text-transform: uppercase;
 }
@@ -99,7 +99,7 @@ a:hover {
 	color: #00ffff;
 	text-decoration: underline 1px;
 }
-.user-options, .admin-options {
+.user-options, .admin-options, .info-options {
 	padding: 5px 10px;
 }
 .reason {

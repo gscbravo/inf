@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css">
+	<title>Identify No. {{ post }} at {{ board }}</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Identify <a href="/b/{{ board }}/#p{{ post }}">No. {{ post }} at {{ board }}</a></h1>
+		<h2>IP</h2>
+		<p>{{ info[0] }}</p>
+		<h2>User-Agent</h2>
+		<p>{{ info[1] }}</p>
+	</div>
+</body>
+</html>

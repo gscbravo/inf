@@ -43,7 +43,7 @@
 			<label for="form-subject">Subject:</label>
 			<input type="text" name="subject" id="form-subject" placeholder="Subject"><br>
 			<label for="form-replyto">Reply To:</label>
-			<input type="text" name="replyto" value="{{ replyto }}" id="form-replyto" placeholder="1"><br>
+			<input type="text" name="replyto" value="{{ replyto }}" id="form-replyto" placeholder="ID No. (e.g. 1, 2, ...)"><br>
 			<label for="form-text"><span id="form-req" title="Required">*</span> Comment:</label><br>
 			<textarea name="text" id="form-text" cols="35" rows="15" placeholder="Comment..." required></textarea><br>
 			<input type="submit" id="form-submit" value="Submit">
@@ -106,7 +106,9 @@
 						<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
 					</form>
 				</div>
-				<span>IP: {{ comment['ip'] }}</span>
+				<div class="info-options">
+					<a href="/identify?board={{ board_name }}&post={{ comment['id'] }}" class="identify"><i class="fa-solid fa-id-card"></i> Identify</a>
+				</div>
 				{% endif %}
 			</div>
 		</div>

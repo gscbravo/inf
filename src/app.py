@@ -542,6 +542,26 @@ def unreport():
 
     return redirect(f"/reports/{board}/")
 
+@app.route("/identify")
+def indentify():
+    if "user" not in session:
+        return redirect("/")
+
+    board = filter_name(request.args.get("board", "").lower().strip())
+    post = request.args.get("post", "")
+
+    with sqlite3.connect("board.db") as conn:
+        cur = conn.cursor()
+        if not cur.execute(f'select name from sqlite_master where type="table" and name="{board}"').fetchall():
+            res = []
+        else:
+            res = cur.execute(f'select ip, ua from {board} where id=?', (post,)).fetchone()
+
+    if res is None:
+        res = ["", ""]
+
+    return render_template("identify.html", info=res, board=board, post=post)
+
 @app.route("/boards")
 def list_boards():
     # get all boards and sort
@@ -600,7 +620,8 @@ def load_board(board):
             "replies": [item[0] for item in cur.execute(f'select id from {req_board} where replyto=? and id>=?', (comment[0], comment[0]))],
             "staff": comment[6],
             "type": commentauth,
-            "ip": comment[7]
+            "ip": comment[7],
+            "ua": comment[8]
         })
 
     return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION, announce=announce.split("\n"))
@@ -668,6 +689,9 @@ def submit(board):
     route = request.access_route + [request.remote_addr]
     ip_addr = next((addr for addr in reversed(route) if addr not in trusted), request.remote_addr)
 
+    # get user agent
+    ua = request.headers.get("User-Agent", "")
+
     # insert comment and return to post sent
     comment_data = (
         name,
@@ -676,7 +700,8 @@ def submit(board):
         text,
         str(math.floor(time.time())),
         staff,
-        ip_addr
+        ip_addr,
+        ua
     )
 
     conn = sqlite3.connect("board.db")
@@ -691,7 +716,8 @@ def submit(board):
         text text,
         date text,
         staff text,
-        ip text
+        ip text,
+        ua text
     )''')
     conn.commit()
 
@@ -699,7 +725,7 @@ def submit(board):
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
         cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
 
-    cur.execute(f'insert into {req_board} values (NULL, ?, ?, ?, ?, ?, ?, ?)', comment_data)
+    cur.execute(f'insert into {req_board} values (NULL, ?, ?, ?, ?, ?, ?, ?, ?)', comment_data)
     conn.commit()
 
     return redirect(f"/b/{req_board}/")
