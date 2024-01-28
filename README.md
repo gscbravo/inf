@@ -90,4 +90,3 @@ with [Nginx](https://nginx.org/).
 - [ ] Staff only board
 - [ ] IP address blocking
 - [ ] Research more on if current IP logging method for posts is good
-- [ ] Store dates as a Unix timestamp and not the literal date in text

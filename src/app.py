@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from datetime import datetime, timezone
+from datetime import datetime
+import time
+import math
 from uuid import uuid4
 from flask import Flask, render_template, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -594,7 +596,7 @@ def load_board(board):
             "subject": comment[2],
             "replyto": comment[3],
             "text": comment[4].split('\n'),
-            "date": comment[5],
+            "date": str(datetime.utcfromtimestamp(int(comment[5]))),
             "replies": [item[0] for item in cur.execute(f'select id from {req_board} where replyto=? and id>=?', (comment[0], comment[0]))],
             "staff": comment[6],
             "type": commentauth,
@@ -672,7 +674,7 @@ def submit(board):
         subject,
         replyto,
         text,
-        str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")),
+        str(math.floor(time.time())),
         staff,
         ip_addr
     )
