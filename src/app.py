@@ -30,6 +30,10 @@ app.config['SECRET_KEY'] = "CHANGE ME TO SOMETHING SECURE"
 
 parser = configparser.ConfigParser()
 
+trusted = {
+    "127.0.0.1"
+}
+
 # create config if none created
 if not os.path.isfile("config.toml"):
     with open("config.toml", "w") as f:
@@ -593,7 +597,8 @@ def load_board(board):
             "date": comment[5],
             "replies": [item[0] for item in cur.execute(f'select id from {req_board} where replyto=? and id>=?', (comment[0], comment[0]))],
             "staff": comment[6],
-            "type": commentauth
+            "type": commentauth,
+            "ip": comment[7]
         })
 
     return render_template("comments.html", replyto=replyto, board_name=req_board, comments=board_comments, default_name=DEFAULT_NAME, site_name=SITE_NAME, site_description=SITE_DESCRIPTION, announce=announce.split("\n"))
@@ -657,6 +662,10 @@ def submit(board):
     if not name:
         name = DEFAULT_NAME
 
+    # get ip
+    route = request.access_route + [request.remote_addr]
+    ip_addr = next((addr for addr in reversed(route) if addr not in trusted), request.remote_addr)
+
     # insert comment and return to post sent
     comment_data = (
         name,
@@ -664,7 +673,8 @@ def submit(board):
         replyto,
         text,
         str(datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")),
-        staff
+        staff,
+        ip_addr
     )
 
     conn = sqlite3.connect("board.db")
@@ -678,7 +688,8 @@ def submit(board):
         replyto text,
         text text,
         date text,
-        staff text
+        staff text,
+        ip text
     )''')
     conn.commit()
 
@@ -686,7 +697,7 @@ def submit(board):
     if len(cur.execute(f'select * from {req_board}').fetchall()) >= MAX_COMMENTS:
         cur.execute(f'delete from {req_board} where rowid in (select rowid from {req_board} limit 1)')
 
-    cur.execute(f'insert into {req_board} values (NULL, ?, ?, ?, ?, ?, ?)', comment_data)
+    cur.execute(f'insert into {req_board} values (NULL, ?, ?, ?, ?, ?, ?, ?)', comment_data)
     conn.commit()
 
     return redirect(f"/b/{req_board}/")

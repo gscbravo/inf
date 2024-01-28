@@ -91,7 +91,6 @@ a:hover {
 }
 .delete:hover, .report:hover, .unreport:hover {
 	color: #ff0000;
-	font-size: 1.3em;
 	text-transform: uppercase;
 }
 .comment-staff {
@@ -101,7 +100,7 @@ a:hover {
 	text-decoration: underline 1px;
 }
 .user-options, .admin-options {
-	padding: 5px 0;
+	padding: 5px 10px;
 }
 .reason {
 	margin: 10px 0;
@@ -124,4 +123,10 @@ table, th, td {
 }
 th, td {
 	padding: 5px;
+}
+.options {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
 }

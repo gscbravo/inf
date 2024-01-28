@@ -94,18 +94,21 @@
 				{% endif %}
 				{% endfor %}
 			</div>
-			<div class="user-options">
-				<a href="/report?board={{ board_name }}&post={{ comment['id'] }}" class="report"><i class="fa-solid fa-flag"></i> Report</a>
+			<div class="options">
+				<div class="user-options">
+					<a href="/report?board={{ board_name }}&post={{ comment['id'] }}" class="report"><i class="fa-solid fa-flag"></i> Report</a>
+				</div>
+				{% if session['user'] %}
+				<div class="admin-options">
+					<form action="/delete" method="post">
+						<input type="hidden" name="board" value="{{ board_name }}">
+						<input type="hidden" name="post" value="{{ comment['id'] }}">
+						<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
+					</form>
+				</div>
+				<span>IP: {{ comment['ip'] }}</span>
+				{% endif %}
 			</div>
-			{% if session['user'] %}
-			<div class="admin-options">
-				<form action="/delete" method="post">
-					<input type="hidden" name="board" value="{{ board_name }}">
-					<input type="hidden" name="post" value="{{ comment['id'] }}">
-					<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
-				</form>
-			</div>
-			{% endif %}
 		</div>
 		{% endfor %}
 	</div>
