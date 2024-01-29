@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style.css">
+	<title>Delete</title>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>Delete No. {{ post }} at {{ board }}</h1>
+		<form action="/delete" method="post">
+			<input type="hidden" name="board" value="{{ board }}">
+			<input type="hidden" name="post" value="{{ post }}">
+			<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
+		</form>
+	</div>
+</body>
+</html>

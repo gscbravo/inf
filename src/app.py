@@ -433,10 +433,15 @@ def logout():
 
 @app.route("/delete", methods=["GET", "POST"])
 def delete():
-    if "user" not in session or request.method == "GET":
+    if "user" not in session:
         return redirect("/")
 
-    board = filter_name(request.form.get("board", ""))
+    if request.method == "GET":
+        board = filter_name(request.args.get("board", "").lower().strip())
+        post = request.args.get("post", "")
+        return render_template("delete.html", board=board, post=post)
+
+    board = filter_name(request.form.get("board", "").lower().strip())
     post = request.form.get("post", "")
 
     admin = request.args.get("admin", "")
@@ -477,7 +482,7 @@ def report():
         post = request.args.get("post", "")
         return render_template("reportpost.html", board=board, post=post)
 
-    board = filter_name(request.form.get("board", ""))
+    board = filter_name(request.form.get("board", "").lower().strip())
     post = request.form.get("post", "")
     reason = request.form.get("reason", "").strip()
 
@@ -525,7 +530,7 @@ def unreport():
     if "user" not in session or request.method == "GET":
         return redirect("/")
 
-    board = filter_name(request.form.get("board", ""))
+    board = filter_name(request.form.get("board", "").lower().strip())
     post = request.form.get("post", "")
 
     if not board or not post:

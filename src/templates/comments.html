@@ -100,11 +100,7 @@
 				</div>
 				{% if session['user'] %}
 				<div class="admin-options">
-					<form action="/delete" method="post">
-						<input type="hidden" name="board" value="{{ board_name }}">
-						<input type="hidden" name="post" value="{{ comment['id'] }}">
-						<button class="delete"><i class="fa-solid fa-trash"></i> Delete This</button>
-					</form>
+					<a href="/delete?board={{ board_name }}&post={{ comment['id'] }}" class="delete"><i class="fa-solid fa-trash"></i> Delete</a>
 				</div>
 				<div class="info-options">
 					<a href="/identify?board={{ board_name }}&post={{ comment['id'] }}" class="identify"><i class="fa-solid fa-id-card"></i> Identify</a>
