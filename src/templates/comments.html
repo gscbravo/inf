@@ -19,6 +19,7 @@
 		<!-- forum options -->
 		<h2><a href="/boards" id="created-boards">Created Boards</a></h2>
 		<form action="/go" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<input type="text" name="board" id="go-board" placeholder="board" required>
 			<input type="submit" id="go-submit" value="Go">
 		</form>
@@ -34,6 +35,7 @@
 		<!-- comment form -->
 		<h2>Submit Comment</h2>
 		<form action="submit" method="post" id="comment-form">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<label for="form-name">Name:</label>
 			<input type="text" name="name" id="form-name" placeholder="{{ default_name }}"><br>
 			{% if session['user'] %}

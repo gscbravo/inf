@@ -10,6 +10,7 @@
 	<div class="wrapper">
 		<h1>Report Post</h1>
 		<form action="/report" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<label for="report-board">Board:</label>
 			<input type="text" id="report-board" name="board" placeholder="Board" value="{{ board }}"><br>
 			<label for="report-post">Post:</label>

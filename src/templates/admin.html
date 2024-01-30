@@ -15,11 +15,13 @@
 		<p><a href="/logout">Logout</a></p>
 		<h2>Announcement</h2>
 		<form action="/announce" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<textarea name="announce" id="" cols="35" rows="10" placeholder="Announcement">{{ announce }}</textarea><br>
 			<input type="submit" value="Announce">
 		</form>
 		<h2>Change Password</h2>
 		<form action="/changepassword" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<label for="change-password">New Password:</label>
 			<input type="password" name="password" id="change-password" placeholder="Password" required><br>
 			<label for="confirm-password">Confirm:</label>
@@ -48,6 +50,7 @@
 				<td><a href="/register?token={{ row[0] }}">Register</a></td>
 				<td>
 					<form action="/deltoken" method="post">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 						<input type="hidden" name="token" value="{{ row[0] }}">
 						<input type="submit" value="Delete">
 					</form>
@@ -57,6 +60,7 @@
 		</table>
 		{% endif %}
 		<form action="/gentoken" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<input type="submit" value="Generate Token">
 		</form>
 		{% endif %}
@@ -79,6 +83,7 @@
 				{% endif %}
 				<td>
 					<form action="/delacct" method="post">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 						<input type="hidden" name="username" value="{{ row[0] }}">
 						<input type="submit" value="Delete">
 					</form>

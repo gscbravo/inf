@@ -25,6 +25,7 @@ by starting a line with the "<" character. Boards can use the letters of the
 alphabet, as well as numbers, however, they cannot start with a number due to
 technical limitations on behalf of SQLite.
 
+CSRF protection is done through [Flask-WTF](https://github.com/wtforms/flask-wtf/).
 [Font Awesome](https://fontawesome.com/) Free is used to provide icons.
 
 ### Defaults
@@ -61,7 +62,7 @@ default_board = general
 For simple development.
 
 ```
-pip3 install flask
+pip3 install flask flask-wtf
 cd src
 flask run
 ```

@@ -20,6 +20,7 @@ import math
 from uuid import uuid4
 from flask import Flask, render_template, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_wtf.csrf import CSRFProtect
 import sqlite3
 import os
 import configparser
@@ -29,6 +30,8 @@ app = Flask(__name__)
 
 # CHANGE THIS!!!
 app.config['SECRET_KEY'] = "CHANGE ME TO SOMETHING SECURE"
+
+csrf = CSRFProtect(app)
 
 parser = configparser.ConfigParser()
 
