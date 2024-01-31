@@ -58,6 +58,11 @@
 					<input type="submit" class="delete" value="Delete This">
 				</form>
 			</div>
+			<details>
+				<summary>Identify</summary>
+				<p>{{ report['ip'] }}</p>
+				<p>{{ report['ua'] }}</p>
+			</details>
 			{% endif %}
 		</div>
 		{% endfor %}

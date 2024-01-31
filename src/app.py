@@ -93,7 +93,10 @@ def staff_init():
     cur.execute('''create table if not exists reports (
         board text,
         postid integer,
-        reason text
+        reason text,
+        name text,
+        ip text,
+        ua text
     )''')
     cur.execute('''create table if not exists meta (
         field text,
@@ -360,7 +363,9 @@ def reports(board):
                 "text": comment[4].split('\n'),
                 "date": comment[5],
                 "staff": comment[6],
-                "reason": report[2]
+                "reason": report[2],
+                "ip": comment[7],
+                "ua": comment[8]
             })
 
     return render_template("reports.html", reports=reported_comments, board=board)
@@ -523,7 +528,9 @@ def report():
     if cur.execute('select * from reports where board=? and postid=?', (board, post)).fetchall():
         return redirect(f"/b/{board}/")
 
-    cur.execute('insert into reports values (?, ?, ?)', (board, post, reason))
+    res = cur2.execute(f'select name, ip, ua from {board} where id=?', (post,)).fetchone()
+
+    cur.execute('insert into reports values (?, ?, ?, ?, ?, ?)', (board, post, reason, res[0], res[1], res[2]))
     conn.commit()
 
     return redirect(f"/b/{board}/")
