@@ -91,3 +91,4 @@ with [Nginx](https://nginx.org/).
 - [ ] Staff only board
 - [ ] IP address blocking
 - [ ] Research more on if current IP logging method for posts is good
+- [ ] Replace numbers at the start of board names with the number spelled out
