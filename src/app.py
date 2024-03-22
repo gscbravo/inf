@@ -109,6 +109,20 @@ staff_init()
 
 # turn input to proper board name
 def filter_name(str):
+    if str[0].isdigit():
+        numrep = {
+            "1": "one",
+            "2": "two",
+            "3": "three",
+            "4": "four",
+            "5": "five",
+            "6": "six",
+            "7": "seven",
+            "8": "eight",
+            "9": "nine",
+            "0": "zero"
+        }
+        str = str.replace(str[0], numrep[str[0]], 1)
     allowed_chars = f"{string.digits}{string.ascii_letters}"
     return "".join(c for c in str if c in allowed_chars).lstrip("1234567890")
 
@@ -647,11 +661,7 @@ def go_to_board():
         return redirect("/")
 
     # filter board name and make sure it doesn't start with a digit
-    allowed_chars = f"{string.digits}{string.ascii_letters}"
-    redirect_board = "".join(c for c in request.form.get("board", "").lower().strip() if c in allowed_chars)
-    if redirect_board[0].isdigit():
-        return render_template("error.html", error="Board name must not start with a digit")
-    redirect_board = redirect_board.lstrip("1234567890")
+    redirect_board = filter_name(request.form.get("board", "").lower().strip())
 
     if not redirect_board:
         return render_template("error.html", error="Board name must not be empty")
